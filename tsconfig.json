@@ -9,6 +9,7 @@
     { "path": "./packages/logger" },
     { "path": "./packages/shared" },
     { "path": "./packages/tools" },
+    { "path": "./packages/filesystem" },
     { "path": "./packages/llm" },
     { "path": "./apps/cli" }
   ],

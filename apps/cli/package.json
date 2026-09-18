@@ -21,6 +21,7 @@
     "@sora/logger": "workspace:*",
     "@sora/shared": "workspace:*",
     "@sora/tools": "workspace:*",
+    "@sora/filesystem": "workspace:*",
     "chalk": "^5.4.1",
     "commander": "^14.0.3",
     "ink": "^7.1.1",

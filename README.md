@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 4 — Tool System
+Phase 5 — Filesystem Intelligence
 
 ### Completed
 
@@ -14,6 +14,7 @@ Phase 4 — Tool System
 - [x] Phase 2.5 — UI Polish
 - [x] Phase 3 — Conversation Engine
 - [x] Phase 4 — Tool System
+- [x] Phase 5 — Filesystem Intelligence
 
 ---
 
@@ -24,30 +25,47 @@ Phase 4 — Tool System
 - Groq LLM integration
 - Streaming responses
 - Multi-turn conversations
-- Conversation history during current session
+- Conversation history
 - Conversation clearing
 - Provider abstraction
 - Conversation state management
 - Error handling
-- Tool abstraction
+
+### Tool System
+
+- Generic tool abstraction
 - Tool registry
-- Tool schema validation
 - Tool execution
+- Tool schema validation
 - Structured tool results
-- Tool error handling
 - Provider-independent tool calls
+
+### Filesystem Intelligence
+
+- List directories
+- Read text files
+- Read selected line ranges
+- Search text across project files
+- Inspect file metadata
+- Workspace-aware path resolution
+- Workspace boundary protection
+- Search and file-size limits
+- Ignored-directory handling
 
 ---
 
 ## Not Implemented Yet
 
-- Filesystem tools
+- File modification
+- File creation
+- File deletion
 - Shell execution
 - Autonomous agent loop
 - Planning
-- Repository context engine
 - Repository indexing
-- Code search
+- Semantic code search
+- RAG
+- Verification/self-correction
 - Git integration
 - Permission system
 - Security sandbox
@@ -77,7 +95,16 @@ Phase 4 — Tool System
                             │  ToolCalls / ToolDefinitions
                      ┌──────▼──────┐
                      │ Tool System │  packages/tools (ToolRegistry, ToolExecutor,
-                     │             │  Schema Validator, Structured Errors, EchoTool)
+                     │             │  Schema Validator, Structured Errors)
+                     └──────┬──────┘
+                            │  Executes Tools
+                     ┌──────▼──────┐
+                     │ Filesystem  │  packages/filesystem (FilesystemService, PathService,
+                     │Intelligence │  FileSearchService, list_dir, read_file, search_files)
+                     └──────┬──────┘
+                            │  Workspace boundary
+                     ┌──────▼──────┐
+                     │   Node fs   │  Local repository read-only access
                      └─────────────┘
 ```
 
@@ -160,7 +187,7 @@ pnpm format
 - [x] Phase 2.5 — UI Polish
 - [x] Phase 3 — Conversation Engine
 - [x] Phase 4 — Tool System
-- [ ] Phase 5 — Filesystem Intelligence
+- [x] Phase 5 — Filesystem Intelligence
 - [ ] Phase 6 — Terminal / Shell Tool
 - [ ] Phase 7 — Agent Loop
 - [ ] Phase 8 — Repository Context Engine
