@@ -1,4 +1,5 @@
 import type { ToolCall } from '@sora/core';
+import type { RepositoryContextSnapshot } from '@sora/context';
 
 export type AgentState =
   | 'idle'
@@ -20,6 +21,7 @@ export interface AgentRunOptions {
   signal?: AbortSignal;
   cwd?: string;
   requestId?: string;
+  skipContext?: boolean;
 }
 
 export type AgentEvent =
@@ -27,6 +29,17 @@ export type AgentEvent =
       type: 'agent_started';
       runId: string;
       prompt: string;
+    }
+  | {
+      type: 'context_build_started';
+    }
+  | {
+      type: 'context_build_completed';
+      snapshot: RepositoryContextSnapshot;
+    }
+  | {
+      type: 'context_build_failed';
+      error: Error;
     }
   | {
       type: 'iteration_started';

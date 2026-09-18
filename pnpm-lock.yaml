@@ -41,6 +41,9 @@ importers:
       '@sora/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@sora/context':
+        specifier: workspace:*
+        version: link:../../packages/context
       '@sora/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -93,6 +96,9 @@ importers:
 
   packages/agent:
     dependencies:
+      '@sora/context':
+        specifier: workspace:*
+        version: link:../context
       '@sora/core':
         specifier: workspace:*
         version: link:../core
@@ -119,6 +125,28 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.7
+        version: 3.2.7(@types/node@22.20.3)(supports-color@7.2.0)(tsx@4.23.13)
+
+  packages/context:
+    dependencies:
+      '@sora/core':
+        specifier: workspace:*
+        version: link:../core
+      '@sora/filesystem':
+        specifier: workspace:*
+        version: link:../filesystem
+      '@sora/logger':
+        specifier: workspace:*
+        version: link:../logger
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.20.3
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

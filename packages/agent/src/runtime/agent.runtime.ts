@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import process from 'node:process';
 import type { ConversationManager } from '@sora/core';
 import type { ToolRegistry, ToolExecutor } from '@sora/tools';
+import type { RepositoryContextBuilder } from '@sora/context';
 import { logger } from '@sora/logger';
 import type {
   AgentConfig,
@@ -17,6 +18,7 @@ export interface AgentRuntimeOptions {
   conversationManager: ConversationManager;
   toolRegistry: ToolRegistry;
   toolExecutor: ToolExecutor;
+  contextBuilder?: RepositoryContextBuilder;
   config?: AgentConfig;
 }
 
@@ -27,6 +29,7 @@ export class AgentRuntime {
   private readonly conversationManager: ConversationManager;
   private readonly toolRegistry: ToolRegistry;
   private readonly toolExecutor: ToolExecutor;
+  private readonly contextBuilder?: RepositoryContextBuilder;
   private readonly config: Required<AgentConfig>;
 
   private state: AgentState = 'idle';
@@ -36,6 +39,7 @@ export class AgentRuntime {
     this.conversationManager = options.conversationManager;
     this.toolRegistry = options.toolRegistry;
     this.toolExecutor = options.toolExecutor;
+    this.contextBuilder = options.contextBuilder;
 
     this.config = {
       maxIterations: options.config?.maxIterations ?? DEFAULT_MAX_ITERATIONS,
@@ -60,6 +64,10 @@ export class AgentRuntime {
 
   getToolExecutor(): ToolExecutor {
     return this.toolExecutor;
+  }
+
+  getContextBuilder(): RepositoryContextBuilder | undefined {
+    return this.contextBuilder;
   }
 
   getConfig(): Required<AgentConfig> {
@@ -119,12 +127,35 @@ export class AgentRuntime {
       // 2. Emit start event
       yield { type: 'agent_started', runId, prompt: trimmed };
 
-      // 3. Run multi-turn agent loop
+      // 3. Build repository context snapshot (Phase 8 Context Engine)
+      let initialContext: string | undefined;
+
+      if (this.contextBuilder && !options?.skipContext) {
+        yield { type: 'context_build_started' };
+        try {
+          const snapshot = await this.contextBuilder.build({
+            rootPath: options?.cwd ?? this.config.cwd,
+            query: trimmed,
+          });
+          initialContext = snapshot.formattedPromptContext;
+          yield { type: 'context_build_completed', snapshot };
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          logger.warn(
+            `[AgentRuntime] Repository context build failed: ${error.message}`,
+          );
+          yield { type: 'context_build_failed', error };
+          // Gracefully continue execution without repository context
+        }
+      }
+
+      // 4. Run multi-turn agent loop with repository context orientation
       const loop = new AgentLoop({
         conversationManager: this.conversationManager,
         toolRegistry: this.toolRegistry,
         toolExecutor: this.toolExecutor,
         config: this.config,
+        initialContext,
       });
 
       for await (const event of loop.run({

@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 7 — Agent Loop
+Phase 8 — Repository Context Engine
 
 ### Completed
 
@@ -17,6 +17,7 @@ Phase 7 — Agent Loop
 - [x] Phase 5 — Filesystem Intelligence
 - [x] Phase 6 — Terminal / Shell Tool
 - [x] Phase 7 — Agent Loop
+- [x] Phase 8 — Repository Context Engine
 
 ---
 
@@ -75,6 +76,19 @@ Phase 7 — Agent Loop
 - Bounded memory buffers for process outputs
 - Structured error normalization
 
+### Repository Context Engine
+
+- Deterministic, offline workspace discovery and boundary validation
+- Project type detection (Node.js, TypeScript, Python, Rust, Go, Flutter, etc.)
+- Language composition analysis and primary language identification
+- Package manager detection (`pnpm`, `npm`, `yarn`, `bun`, `cargo`, `poetry`, etc.)
+- Monorepo area and workspace package detection (`apps/*`, `packages/*`, `services/*`)
+- Bounded ASCII directory tree generator with depth and character budgets
+- Heuristic candidate file relevance ranking based on query tokens, domain synonyms, and file signals
+- Automatic secret protection: sensitive files (`.env`, `*.key`, `*.pem`, `credentials.*`, `secrets.*`) score 0 and are never read into LLM context
+- In-memory workspace caching with configurable TTL
+- Seamless agent loop orientation context injection
+
 ---
 
 ## Not Implemented Yet
@@ -84,7 +98,7 @@ Phase 7 — Agent Loop
 - File deletion
 - Planning
 - Repository indexing
-- Semantic code search
+- Semantic code search / embeddings
 - RAG
 - Verification/self-correction
 - Git integration
@@ -110,18 +124,18 @@ Phase 7 — Agent Loop
                      │  AgentLoop  │  Concurrency Lock, Limits, Streaming)
                      └──────┬──────┘
                             │
-               ┌────────────┴────────────┐
-               ▼                         ▼
-     ┌──────────────────┐      ┌──────────────────┐
-     │ConversationEngine│      │   Tool System    │  packages/tools
-     │ (packages/core)  │      │(Registry/Executor│
-     └─────────┬────────┘      └─────────┬────────┘
-               │                         │  Executes Tools
-               ▼                   ┌─────┴─────┐
-     ┌──────────────────┐          ▼           ▼
-     │   LLM Provider   │    ┌──────────┐ ┌──────────┐
-     │  (packages/llm)  │    │Filesystem│ │Shell Tool│
-     └──────────────────┘    └──────────┘ └──────────┘
+               ┌────────────┼────────────┐
+               ▼            ▼            ▼
+     ┌──────────────────┐ ┌────────────────┐ ┌──────────────────┐
+     │ConversationEngine│ │ Context Engine │ │   Tool System    │  packages/tools
+     │ (packages/core)  │ │(@sora/context) │ │(Registry/Executor│
+     └─────────┬────────┘ └────────────────┘ └─────────┬────────┘
+               │  Injected Orientation                 │  Executes Tools
+               ▼                                 ┌─────┴─────┐
+     ┌──────────────────┐                        ▼           ▼
+     │   LLM Provider   │                  ┌──────────┐ ┌──────────┐
+     │  (packages/llm)  │                  │Filesystem│ │Shell Tool│
+     └──────────────────┘                  └──────────┘ └──────────┘
 ```
 
 ---
@@ -206,7 +220,7 @@ pnpm format
 - [x] Phase 5 — Filesystem Intelligence
 - [x] Phase 6 — Terminal / Shell Tool
 - [x] Phase 7 — Agent Loop
-- [ ] Phase 8 — Repository Context Engine
+- [x] Phase 8 — Repository Context Engine
 - [ ] Phase 9 — Planning System
 - [ ] Phase 10 — Verification & Self-Correction
 

@@ -18,6 +18,7 @@ export default defineConfig({
       '@sora/shell': path.resolve(__dirname, './packages/shell/src/index.ts'),
       '@sora/llm': path.resolve(__dirname, './packages/llm/src/index.ts'),
       '@sora/agent': path.resolve(__dirname, './packages/agent/src/index.ts'),
+      '@sora/context': path.resolve(__dirname, './packages/context/src/index.ts'),
     },
   },
 });

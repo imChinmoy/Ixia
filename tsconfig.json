@@ -13,6 +13,7 @@
     { "path": "./packages/shell" },
     { "path": "./packages/llm" },
     { "path": "./packages/agent" },
+    { "path": "./packages/context" },
     { "path": "./apps/cli" }
   ],
   "files": [],

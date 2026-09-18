@@ -7,6 +7,7 @@ import { ToolRegistry, ToolExecutor } from '@sora/tools';
 import { registerFilesystemTools } from '@sora/filesystem';
 import { registerShellTools } from '@sora/shell';
 import { AgentRuntime } from '@sora/agent';
+import { RepositoryContextBuilder } from '@sora/context';
 import { renderInteractiveUI } from '../ui/index.js';
 import { logger } from '@sora/logger';
 
@@ -35,10 +36,15 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
     defaultCwd: process.cwd(),
   });
 
+  const contextBuilder = new RepositoryContextBuilder({
+    defaultRoot: process.cwd(),
+  });
+
   const agentRuntime = new AgentRuntime({
     conversationManager,
     toolRegistry,
     toolExecutor,
+    contextBuilder,
     config: {
       cwd: process.cwd(),
       maxIterations: 10,
@@ -65,7 +71,9 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
       for await (const event of agentRuntime.runStream(prompt, {
         signal: abortController.signal,
       })) {
-        if (event.type === 'tool_call_started') {
+        if (event.type === 'context_build_started') {
+          process.stdout.write(`${chalk.dim('◇ Analyzing workspace...')}\n`);
+        } else if (event.type === 'tool_call_started') {
           const args =
             Object.keys(event.toolCall.arguments).length > 0
               ? chalk.dim(JSON.stringify(event.toolCall.arguments))

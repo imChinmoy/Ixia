@@ -19,6 +19,7 @@ export interface AgentLoopOptions {
   toolRegistry: ToolRegistry;
   toolExecutor: ToolExecutor;
   config: Required<AgentConfig>;
+  initialContext?: string;
 }
 
 export class AgentLoop {
@@ -26,12 +27,14 @@ export class AgentLoop {
   private readonly toolRegistry: ToolRegistry;
   private readonly toolCallHandler: ToolCallHandler;
   private readonly config: Required<AgentConfig>;
+  private readonly initialContext?: string;
 
   constructor(options: AgentLoopOptions) {
     this.conversationManager = options.conversationManager;
     this.toolRegistry = options.toolRegistry;
     this.toolCallHandler = new ToolCallHandler(options.toolExecutor);
     this.config = options.config;
+    this.initialContext = options.initialContext;
   }
 
   /**
@@ -62,7 +65,10 @@ export class AgentLoop {
         logger.debug(`[AgentLoop] Starting iteration ${iteration}`);
 
         // 1. Prepare messages payload for provider
-        const systemPrompt = this.conversationManager.getSystemPrompt();
+        let systemPrompt = this.conversationManager.getSystemPrompt();
+        if (this.initialContext) {
+          systemPrompt = `${systemPrompt}\n\n${this.initialContext}`;
+        }
         const systemMessage = createSystemMessage(systemPrompt);
         const conversationMessages = this.conversationManager.getMessages();
         const payload: Message[] = [systemMessage, ...conversationMessages];

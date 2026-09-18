@@ -1,5 +1,5 @@
 {
-  "name": "@sora/agent",
+  "name": "@sora/context",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -11,9 +11,8 @@
   },
   "dependencies": {
     "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*",
-    "@sora/tools": "workspace:*",
-    "@sora/context": "workspace:*"
+    "@sora/filesystem": "workspace:*",
+    "@sora/logger": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

@@ -24,6 +24,7 @@
     "@sora/filesystem": "workspace:*",
     "@sora/shell": "workspace:*",
     "@sora/agent": "workspace:*",
+    "@sora/context": "workspace:*",
     "chalk": "^5.4.1",
     "commander": "^14.0.3",
     "ink": "^7.1.1",
