@@ -6,6 +6,7 @@ export interface LLMRequestOptions {
   temperature?: number;
   maxTokens?: number;
   tools?: readonly ToolDefinition[];
+  responseFormat?: { type: 'json_object' | 'text' };
 }
 
 export type LLMEvent =

@@ -2,6 +2,8 @@ import process from 'node:process';
 import { DEFAULT_VERSION } from '@sora/core';
 import { formatPath } from '@sora/shared';
 
+import type { Plan } from '@sora/planner';
+
 export interface SlashContext {
   cwd?: string;
   model?: string;
@@ -9,6 +11,7 @@ export interface SlashContext {
   version?: string;
   tools?: Array<{ name: string; description: string }>;
   messagesCount?: number;
+  activePlan?: Plan;
 }
 
 export type SlashResult =
@@ -20,6 +23,7 @@ export type SlashResult =
   | { type: 'config'; message: string }
   | { type: 'status'; message: string }
   | { type: 'model'; message: string }
+  | { type: 'plan'; message: string }
   | { type: 'unknown'; command: string; message: string };
 
 export function isSlashCommand(input: string): boolean {
@@ -43,6 +47,7 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
           'Sora Commands',
           '',
           '  /help       Show available commands',
+          '  /plan       Show active plan',
           '  /tools      List available tools',
           '  /cwd        Show current directory',
           '  /clear      Clear conversation',
@@ -54,6 +59,38 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
           '  /quit       Exit Sora',
         ].join('\n'),
       };
+
+    case '/plan': {
+      if (!context.activePlan) {
+        return {
+          type: 'plan',
+          message: 'No active plan. Sora creates plans automatically for complex multi-step tasks.',
+        };
+      }
+
+      const plan = context.activePlan;
+      const completedCount = plan.steps.filter((s) => s.status === 'completed').length;
+      const lines = [
+        `Plan · ${plan.goal} (${completedCount}/${plan.steps.length} completed)`,
+        '',
+      ];
+
+      for (let i = 0; i < plan.steps.length; i++) {
+        const step = plan.steps[i]!;
+        let marker = '○';
+        if (step.id === plan.currentStepId || step.status === 'in_progress') marker = '→';
+        else if (step.status === 'completed') marker = '✓';
+        else if (step.status === 'failed') marker = '×';
+        else if (step.status === 'blocked') marker = '!';
+        else if (step.status === 'skipped') marker = '⊘';
+        lines.push(`  ${i + 1}. ${marker} ${step.title}`);
+      }
+
+      return {
+        type: 'plan',
+        message: lines.join('\n'),
+      };
+    }
 
     case '/tools': {
       const tools =

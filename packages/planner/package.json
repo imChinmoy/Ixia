@@ -1,5 +1,5 @@
 {
-  "name": "@sora/agent",
+  "name": "@sora/planner",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,11 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*",
-    "@sora/tools": "workspace:*",
     "@sora/context": "workspace:*",
-    "@sora/planner": "workspace:*"
+    "@sora/core": "workspace:*",
+    "@sora/logger": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

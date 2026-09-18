@@ -1,5 +1,6 @@
 import type { ToolCall } from '@sora/core';
 import type { RepositoryContextSnapshot } from '@sora/context';
+import type { Plan, PlanStep } from '@sora/planner';
 
 export type AgentState =
   | 'idle'
@@ -22,6 +23,8 @@ export interface AgentRunOptions {
   cwd?: string;
   requestId?: string;
   skipContext?: boolean;
+  skipPlanning?: boolean;
+  forcePlan?: boolean;
 }
 
 export type AgentEvent =
@@ -40,6 +43,65 @@ export type AgentEvent =
   | {
       type: 'context_build_failed';
       error: Error;
+    }
+  | {
+      type: 'plan_created';
+      plan: Plan;
+    }
+  | {
+      type: 'plan_ready';
+      plan: Plan;
+    }
+  | {
+      type: 'plan_started';
+      plan: Plan;
+    }
+  | {
+      type: 'step_started';
+      planId: string;
+      step: PlanStep;
+    }
+  | {
+      type: 'step_completed';
+      planId: string;
+      step: PlanStep;
+    }
+  | {
+      type: 'step_skipped';
+      planId: string;
+      step: PlanStep;
+      reason?: string;
+    }
+  | {
+      type: 'step_blocked';
+      planId: string;
+      step: PlanStep;
+      reason?: string;
+    }
+  | {
+      type: 'step_failed';
+      planId: string;
+      step: PlanStep;
+      error: Error;
+    }
+  | {
+      type: 'plan_updated';
+      plan: Plan;
+      change: string;
+    }
+  | {
+      type: 'plan_completed';
+      plan: Plan;
+    }
+  | {
+      type: 'plan_failed';
+      plan: Plan;
+      error: Error;
+    }
+  | {
+      type: 'plan_cancelled';
+      plan: Plan;
+      reason?: string;
     }
   | {
       type: 'iteration_started';

@@ -8,6 +8,7 @@ import { registerFilesystemTools } from '@sora/filesystem';
 import { registerShellTools } from '@sora/shell';
 import { AgentRuntime } from '@sora/agent';
 import { RepositoryContextBuilder } from '@sora/context';
+import { PlannerService } from '@sora/planner';
 import { renderInteractiveUI } from '../ui/index.js';
 import { logger } from '@sora/logger';
 
@@ -40,11 +41,14 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
     defaultRoot: process.cwd(),
   });
 
+  const planner = new PlannerService();
+
   const agentRuntime = new AgentRuntime({
     conversationManager,
     toolRegistry,
     toolExecutor,
     contextBuilder,
+    planner,
     config: {
       cwd: process.cwd(),
       maxIterations: 10,
@@ -73,6 +77,23 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
       })) {
         if (event.type === 'context_build_started') {
           process.stdout.write(`${chalk.dim('◇ Analyzing workspace...')}\n`);
+        } else if (event.type === 'plan_created') {
+          process.stdout.write(
+            `\n${chalk.bold.cyan('Plan:')} ${chalk.bold(event.plan.goal)}\n`,
+          );
+          for (let i = 0; i < event.plan.steps.length; i++) {
+            const step = event.plan.steps[i]!;
+            process.stdout.write(`  ${chalk.dim(`${i + 1}.`)} ${chalk.dim('○')} ${step.title}\n`);
+          }
+          process.stdout.write('\n');
+        } else if (event.type === 'step_started') {
+          process.stdout.write(`${chalk.cyan('▶')} ${chalk.bold(event.step.title)}\n`);
+        } else if (event.type === 'step_completed') {
+          process.stdout.write(`${chalk.green('✓')} ${chalk.dim(event.step.title)}\n\n`);
+        } else if (event.type === 'step_failed') {
+          process.stdout.write(`${chalk.red('✗')} ${event.step.title}: ${event.error.message}\n\n`);
+        } else if (event.type === 'plan_completed') {
+          process.stdout.write(`${chalk.green.bold('✓ Plan completed.')}\n\n`);
         } else if (event.type === 'tool_call_started') {
           const args =
             Object.keys(event.toolCall.arguments).length > 0

@@ -11,10 +11,12 @@ import { Conversation } from '../components/Conversation.js';
 import { InputPrompt } from '../components/InputPrompt.js';
 import { StatusBar } from '../components/StatusBar.js';
 import { Spinner } from '../components/Spinner.js';
+import { PlanView } from '../components/PlanView.js';
 import { isSlashCommand, handleSlashCommand } from '../slash.js';
 import { useTerminalLayout } from '../layout/terminal-layout.js';
 import type { ToolItem } from '../components/ToolsPanel.js';
 import type { AgentRuntime } from '@sora/agent';
+import type { Plan } from '@sora/planner';
 import {
   EXIT_COMMANDS,
   DEFAULT_VERSION,
@@ -48,6 +50,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
   const layout = useTerminalLayout();
   const [uiState, setUiState] = useState<UIState>('input');
   const [messages, setMessages] = useState<MessageItem[]>([]);
+  const [activePlan, setActivePlan] = useState<Plan | null>(null);
   const [isThinking, setIsThinking] = useState(false);
   const [activeStreamingId, setActiveStreamingId] = useState<string | null>(null);
 
@@ -120,6 +123,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
         version,
         tools,
         messagesCount: messages.length,
+        activePlan: activePlan ?? undefined,
       });
 
       if (slashResult) {
@@ -145,6 +149,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
           if (conversationManager) {
             conversationManager.clear();
           }
+          setActivePlan(null);
           setMessages([]);
           return;
         }
@@ -223,6 +228,41 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
         for await (const event of agentRuntime.runStream(input)) {
           if (event.type === 'iteration_started' || event.type === 'llm_started') {
             setIsThinking(true);
+          } else if (event.type === 'plan_created' || event.type === 'plan_ready') {
+            setActivePlan(event.plan);
+          } else if (event.type === 'plan_started') {
+            setActivePlan(event.plan);
+          } else if (event.type === 'step_started') {
+            setActivePlan((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    currentStepId: event.step.id,
+                    steps: prev.steps.map((s) => (s.id === event.step.id ? event.step : s)),
+                  }
+                : null,
+            );
+          } else if (
+            event.type === 'step_completed' ||
+            event.type === 'step_failed' ||
+            event.type === 'step_skipped' ||
+            event.type === 'step_blocked'
+          ) {
+            setActivePlan((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    steps: prev.steps.map((s) => (s.id === event.step.id ? event.step : s)),
+                  }
+                : null,
+            );
+          } else if (
+            event.type === 'plan_updated' ||
+            event.type === 'plan_completed' ||
+            event.type === 'plan_failed' ||
+            event.type === 'plan_cancelled'
+          ) {
+            setActivePlan(event.plan);
           } else if (event.type === 'llm_text_delta') {
             if (!createdAssistantMessage) {
               setIsThinking(false);
@@ -485,6 +525,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
             activeStreamingId={activeStreamingId}
             tools={tools}
           />
+          {activePlan && <PlanView plan={activePlan} />}
           {isThinking && <Spinner />}
         </Box>
       )}

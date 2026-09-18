@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 8 — Repository Context Engine
+Phase 9 — Planning System
 
 ### Completed
 
@@ -18,6 +18,7 @@ Phase 8 — Repository Context Engine
 - [x] Phase 6 — Terminal / Shell Tool
 - [x] Phase 7 — Agent Loop
 - [x] Phase 8 — Repository Context Engine
+- [x] Phase 9 — Planning System
 
 ---
 
@@ -89,6 +90,16 @@ Phase 8 — Repository Context Engine
 - In-memory workspace caching with configurable TTL
 - Seamless agent loop orientation context injection
 
+### Planning System
+
+- Structured, provider-independent plan generation for complex tasks
+- Step dependency graph with cycle detection (3-color DFS)
+- Resilient plan state machine with immutable snapshots
+- Adaptive planning policy distinguishing simple queries from multi-step engineering tasks
+- Fast plan-only intent detection and formatted terminal presentation
+- Step-by-step loop coordination within `AgentRuntime`
+- Interactive terminal UI plan widget (`PlanView`) and `/plan` slash command
+
 ---
 
 ## Not Implemented Yet
@@ -96,7 +107,6 @@ Phase 8 — Repository Context Engine
 - File modification
 - File creation
 - File deletion
-- Planning
 - Repository indexing
 - Semantic code search / embeddings
 - RAG
@@ -121,21 +131,21 @@ Phase 8 — Repository Context Engine
                             │  AgentEvents / AbortSignal
                      ┌──────▼──────┐
                      │ AgentRuntime│  packages/agent (State Machine,
-                     │  AgentLoop  │  Concurrency Lock, Limits, Streaming)
+                     │  AgentLoop  │  Step Orchestration, Limits, Streaming)
                      └──────┬──────┘
                             │
-               ┌────────────┼────────────┐
-               ▼            ▼            ▼
-     ┌──────────────────┐ ┌────────────────┐ ┌──────────────────┐
-     │ConversationEngine│ │ Context Engine │ │   Tool System    │  packages/tools
-     │ (packages/core)  │ │(@sora/context) │ │(Registry/Executor│
-     └─────────┬────────┘ └────────────────┘ └─────────┬────────┘
-               │  Injected Orientation                 │  Executes Tools
-               ▼                                 ┌─────┴─────┐
-     ┌──────────────────┐                        ▼           ▼
-     │   LLM Provider   │                  ┌──────────┐ ┌──────────┐
-     │  (packages/llm)  │                  │Filesystem│ │Shell Tool│
-     └──────────────────┘                  └──────────┘ └──────────┘
+       ┌────────────┬───────┴───────┬────────────┐
+       ▼            ▼               ▼            ▼
+┌──────────────┐┌───────────────┐┌──────────────┐┌──────────────┐
+│ Conversation ││Context Engine ││PlanningSystem││ Tool System  │  packages/tools
+│(packages/core││(@sora/context)││(@sora/planner││(Registry/Exec│
+└──────┬───────┘└───────────────┘└──────────────┘└──────┬───────┘
+       │  Prompt & Context Generation                   │  Executes Tools
+       ▼                                          ┌─────┴─────┐
+┌──────────────┐                                  ▼           ▼
+│ LLM Provider │                            ┌──────────┐ ┌──────────┐
+│(packages/llm)│                            │Filesystem│ │Shell Tool│
+└──────────────┘                            └──────────┘ └──────────┘
 ```
 
 ---
@@ -221,7 +231,7 @@ pnpm format
 - [x] Phase 6 — Terminal / Shell Tool
 - [x] Phase 7 — Agent Loop
 - [x] Phase 8 — Repository Context Engine
-- [ ] Phase 9 — Planning System
+- [x] Phase 9 — Planning System
 - [ ] Phase 10 — Verification & Self-Correction
 
 ### Developer Capabilities

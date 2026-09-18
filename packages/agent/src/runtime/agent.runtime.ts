@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import process from 'node:process';
 import type { ConversationManager } from '@sora/core';
 import type { ToolRegistry, ToolExecutor } from '@sora/tools';
-import type { RepositoryContextBuilder } from '@sora/context';
+import type { RepositoryContextBuilder, RepositoryContextSnapshot } from '@sora/context';
+import type { PlannerService, PlanState, Plan } from '@sora/planner';
 import { logger } from '@sora/logger';
 import type {
   AgentConfig,
@@ -19,6 +20,7 @@ export interface AgentRuntimeOptions {
   toolRegistry: ToolRegistry;
   toolExecutor: ToolExecutor;
   contextBuilder?: RepositoryContextBuilder;
+  planner?: PlannerService;
   config?: AgentConfig;
 }
 
@@ -30,16 +32,19 @@ export class AgentRuntime {
   private readonly toolRegistry: ToolRegistry;
   private readonly toolExecutor: ToolExecutor;
   private readonly contextBuilder?: RepositoryContextBuilder;
+  private readonly planner?: PlannerService;
   private readonly config: Required<AgentConfig>;
 
   private state: AgentState = 'idle';
   private activeAbortController: AbortController | null = null;
+  private activePlanState: PlanState | null = null;
 
   constructor(options: AgentRuntimeOptions) {
     this.conversationManager = options.conversationManager;
     this.toolRegistry = options.toolRegistry;
     this.toolExecutor = options.toolExecutor;
     this.contextBuilder = options.contextBuilder;
+    this.planner = options.planner;
 
     this.config = {
       maxIterations: options.config?.maxIterations ?? DEFAULT_MAX_ITERATIONS,
@@ -70,6 +75,14 @@ export class AgentRuntime {
     return this.contextBuilder;
   }
 
+  getPlanner(): PlannerService | undefined {
+    return this.planner;
+  }
+
+  getActivePlan(): Readonly<Plan> | undefined {
+    return this.activePlanState?.getSnapshot();
+  }
+
   getConfig(): Required<AgentConfig> {
     return { ...this.config };
   }
@@ -78,6 +91,9 @@ export class AgentRuntime {
    * Aborts any currently executing agent run.
    */
   cancel(reason = 'User requested cancellation'): void {
+    if (this.activePlanState) {
+      this.activePlanState.cancel(reason);
+    }
     if (this.activeAbortController) {
       logger.debug(`[AgentRuntime] Cancelling active run: ${reason}`);
       this.activeAbortController.abort(reason);
@@ -129,16 +145,17 @@ export class AgentRuntime {
 
       // 3. Build repository context snapshot (Phase 8 Context Engine)
       let initialContext: string | undefined;
+      let repositorySnapshot: RepositoryContextSnapshot | undefined;
 
       if (this.contextBuilder && !options?.skipContext) {
         yield { type: 'context_build_started' };
         try {
-          const snapshot = await this.contextBuilder.build({
+          repositorySnapshot = await this.contextBuilder.build({
             rootPath: options?.cwd ?? this.config.cwd,
             query: trimmed,
           });
-          initialContext = snapshot.formattedPromptContext;
-          yield { type: 'context_build_completed', snapshot };
+          initialContext = repositorySnapshot.formattedPromptContext;
+          yield { type: 'context_build_completed', snapshot: repositorySnapshot };
         } catch (err) {
           const error = err instanceof Error ? err : new Error(String(err));
           logger.warn(
@@ -149,7 +166,182 @@ export class AgentRuntime {
         }
       }
 
-      // 4. Run multi-turn agent loop with repository context orientation
+      // 4. Planning Phase (Phase 9 Planning System)
+      let planState: PlanState | undefined;
+      const planningInput = {
+        prompt: trimmed,
+        context: repositorySnapshot,
+        cwd: options?.cwd ?? this.config.cwd,
+        history: this.conversationManager.getMessages(),
+      };
+
+      if (
+        this.planner &&
+        !options?.skipPlanning &&
+        (options?.forcePlan || this.planner.shouldPlan(planningInput))
+      ) {
+        try {
+          const provider = this.conversationManager.getProvider();
+          const plan = await this.planner.generatePlan(planningInput, provider, {
+            signal: abortController.signal,
+          });
+
+          yield { type: 'plan_created', plan };
+          yield { type: 'plan_ready', plan };
+
+          planState = this.planner.createPlanState(plan);
+          this.activePlanState = planState;
+
+          // Check if this is a "plan only" request (e.g. "Create a plan ... do not modify anything yet")
+          if (this.planner.isPlanOnly(trimmed)) {
+            const planDisplay = this.planner.formatPlanForDisplay(plan);
+            this.conversationManager.addAssistantMessage(planDisplay);
+            yield {
+              type: 'agent_completed',
+              output: planDisplay,
+              totalIterations: 0,
+              totalToolCalls: 0,
+            };
+            this.state = 'completed';
+            return;
+          }
+        } catch (err) {
+          const error = err instanceof Error ? err : new Error(String(err));
+          logger.warn(`[AgentRuntime] Plan generation failed: ${error.message}`);
+          yield {
+            type: 'plan_failed',
+            plan: {
+              id: 'failed-plan',
+              goal: trimmed,
+              steps: [],
+              status: 'failed',
+              version: 0,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+            error,
+          };
+          // Gracefully fall back to standard unguided loop
+        }
+      }
+
+      // 5. Execution Phase (Planned vs Standard)
+      if (planState) {
+        planState.start();
+        yield { type: 'plan_started', plan: planState.getSnapshot() };
+
+        let currentStep = planState.getNextExecutableStep();
+
+        while (currentStep && !abortController.signal.aborted) {
+          planState.startStep(currentStep.id);
+          yield {
+            type: 'step_started',
+            planId: planState.getSnapshot().id,
+            step: currentStep,
+          };
+
+          // Format compact active plan context for this step
+          const planPromptContext = this.planner!.formatPlanForPrompt(
+            planState.getSnapshot(),
+          );
+
+          const stepContext = initialContext
+            ? `${initialContext}\n\n${planPromptContext}`
+            : planPromptContext;
+
+          const stepLoop = new AgentLoop({
+            conversationManager: this.conversationManager,
+            toolRegistry: this.toolRegistry,
+            toolExecutor: this.toolExecutor,
+            config: this.config,
+            initialContext: stepContext,
+          });
+
+          let stepSuccess = false;
+          let stepError: Error | undefined;
+
+          for await (const event of stepLoop.run({
+            ...options,
+            signal: abortController.signal,
+            cwd: options?.cwd ?? this.config.cwd,
+          })) {
+            if (event.type === 'tool_call_started') {
+              this.state = 'waiting_for_tool';
+            } else if (
+              event.type === 'tool_call_completed' ||
+              event.type === 'tool_call_failed'
+            ) {
+              this.state = 'running';
+            } else if (event.type === 'agent_completed') {
+              stepSuccess = true;
+            } else if (event.type === 'agent_error') {
+              stepError = event.error;
+            } else if (event.type === 'agent_cancelled') {
+              planState.cancel(event.reason);
+              yield {
+                type: 'plan_cancelled',
+                plan: planState.getSnapshot(),
+                reason: event.reason,
+              };
+              yield event;
+              return;
+            }
+
+            yield event;
+          }
+
+          if (stepSuccess) {
+            planState.completeStep(currentStep.id);
+            yield {
+              type: 'step_completed',
+              planId: planState.getSnapshot().id,
+              step: planState.getStep(currentStep.id)!,
+            };
+          } else if (stepError) {
+            planState.failStep(currentStep.id, stepError.message);
+            yield {
+              type: 'step_failed',
+              planId: planState.getSnapshot().id,
+              step: planState.getStep(currentStep.id)!,
+              error: stepError,
+            };
+            break;
+          }
+
+          // Advance to next executable step
+          currentStep = planState.getNextExecutableStep();
+        }
+
+        if (abortController.signal.aborted) {
+          planState.cancel('User requested cancellation');
+          yield {
+            type: 'plan_cancelled',
+            plan: planState.getSnapshot(),
+            reason: 'User requested cancellation',
+          };
+          return;
+        }
+
+        const finalPlan = planState.getSnapshot();
+        const allCompleted = finalPlan.steps.every(
+          (s) => s.status === 'completed' || s.status === 'skipped',
+        );
+
+        if (allCompleted) {
+          planState.complete();
+          yield { type: 'plan_completed', plan: planState.getSnapshot() };
+        } else {
+          yield {
+            type: 'plan_failed',
+            plan: finalPlan,
+            error: new Error('Plan execution finished with incomplete steps'),
+          };
+        }
+
+        return;
+      }
+
+      // 6. Normal unguided AgentLoop (for simple requests or when planning is bypassed)
       const loop = new AgentLoop({
         conversationManager: this.conversationManager,
         toolRegistry: this.toolRegistry,

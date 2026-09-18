@@ -19,6 +19,7 @@ export default defineConfig({
       '@sora/llm': path.resolve(__dirname, './packages/llm/src/index.ts'),
       '@sora/agent': path.resolve(__dirname, './packages/agent/src/index.ts'),
       '@sora/context': path.resolve(__dirname, './packages/context/src/index.ts'),
+      '@sora/planner': path.resolve(__dirname, './packages/planner/src/index.ts'),
     },
   },
 });

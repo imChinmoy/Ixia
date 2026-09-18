@@ -57,6 +57,7 @@ export class GroqProvider implements LLMProvider {
           temperature: options?.temperature,
           max_completion_tokens: options?.maxTokens,
           tools: groqTools,
+          response_format: options?.responseFormat ? { type: options.responseFormat.type } : undefined,
         },
         {
           signal: options?.signal,
