@@ -1,4 +1,7 @@
 import process from 'node:process';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ConfigurationError } from '@sora/core';
 import { DEFAULT_CONFIG, DEFAULT_LLM_MODEL } from './defaults.js';
 
@@ -55,14 +58,72 @@ export class ConfigManager {
   }
 }
 
-export function loadEnv(): void {
+export function findEnvFile(startDir: string): string | undefined {
   try {
-    if (typeof process.loadEnvFile === 'function') {
-      process.loadEnvFile();
+    let currentDir = path.resolve(startDir);
+    while (true) {
+      const candidate = path.join(currentDir, '.env');
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+      const parentDir = path.dirname(currentDir);
+      if (parentDir === currentDir) {
+        break;
+      }
+      currentDir = parentDir;
     }
   } catch {
-    // If .env is missing or invalid, fail silently here.
-    // Explicit validation will report missing variables to the user.
+    // ignore
+  }
+  return undefined;
+}
+
+function parseAndApplyEnv(content: string): void {
+  const lines = content.split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = trimmed.match(/^([^=]+)=(.*)$/);
+    if (match && match[1]) {
+      const key = match[1].trim();
+      let val = match[2]?.trim() ?? '';
+      if (
+        (val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))
+      ) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
+
+export function loadEnv(customPath?: string): void {
+  const envPath =
+    customPath ??
+    findEnvFile(process.cwd()) ??
+    findEnvFile(fileURLToPath(import.meta.url));
+
+  if (!envPath) {
+    return;
+  }
+
+  try {
+    if (typeof process.loadEnvFile === 'function') {
+      process.loadEnvFile(envPath);
+    } else {
+      const content = fs.readFileSync(envPath, 'utf-8');
+      parseAndApplyEnv(content);
+    }
+  } catch {
+    try {
+      const content = fs.readFileSync(envPath, 'utf-8');
+      parseAndApplyEnv(content);
+    } catch {
+      // ignore
+    }
   }
 }
 
