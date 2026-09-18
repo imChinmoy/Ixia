@@ -15,6 +15,7 @@ export default defineConfig({
       '@sora/shared': path.resolve(__dirname, './packages/shared/src/index.ts'),
       '@sora/tools': path.resolve(__dirname, './packages/tools/src/index.ts'),
       '@sora/filesystem': path.resolve(__dirname, './packages/filesystem/src/index.ts'),
+      '@sora/shell': path.resolve(__dirname, './packages/shell/src/index.ts'),
       '@sora/llm': path.resolve(__dirname, './packages/llm/src/index.ts'),
     },
   },

@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 5 — Filesystem Intelligence
+Phase 6 — Terminal / Shell Tool
 
 ### Completed
 
@@ -15,6 +15,7 @@ Phase 5 — Filesystem Intelligence
 - [x] Phase 3 — Conversation Engine
 - [x] Phase 4 — Tool System
 - [x] Phase 5 — Filesystem Intelligence
+- [x] Phase 6 — Terminal / Shell Tool
 
 ---
 
@@ -52,6 +53,16 @@ Phase 5 — Filesystem Intelligence
 - Search and file-size limits
 - Ignored-directory handling
 
+### Terminal / Shell Tool
+
+- Asynchronous shell command execution
+- Captures stdout, stderr, exit code, and execution duration
+- Working directory control anchored to workspace
+- Execution timeout management with clean process termination
+- Request cancellation via `AbortSignal`
+- Bounded memory buffers for process outputs
+- Structured error normalization
+
 ---
 
 ## Not Implemented Yet
@@ -59,7 +70,6 @@ Phase 5 — Filesystem Intelligence
 - File modification
 - File creation
 - File deletion
-- Shell execution
 - Autonomous agent loop
 - Planning
 - Repository indexing
@@ -98,14 +108,16 @@ Phase 5 — Filesystem Intelligence
                      │             │  Schema Validator, Structured Errors)
                      └──────┬──────┘
                             │  Executes Tools
-                     ┌──────▼──────┐
-                     │ Filesystem  │  packages/filesystem (FilesystemService, PathService,
-                     │Intelligence │  FileSearchService, list_dir, read_file, search_files)
-                     └──────┬──────┘
-                            │  Workspace boundary
-                     ┌──────▼──────┐
-                     │   Node fs   │  Local repository read-only access
-                     └─────────────┘
+              ┌─────────────┴─────────────┐
+              ▼                           ▼
+       ┌──────────────┐            ┌──────────────┐
+       │  Filesystem  │            │  Shell Tool  │  packages/shell
+       │ Intelligence │            │              │  (ShellService, ProcessExecutor,
+       └──────┬───────┘            └──────┬───────┘   execute_command)
+              │  Workspace boundary       │  Workspace bounded spawn
+       ┌──────▼───────┐            ┌──────▼───────┐
+       │   Node fs    │            │ Node Process │  Asynchronous child_process
+       └──────────────┘            └──────────────┘
 ```
 
 ---
@@ -188,7 +200,7 @@ pnpm format
 - [x] Phase 3 — Conversation Engine
 - [x] Phase 4 — Tool System
 - [x] Phase 5 — Filesystem Intelligence
-- [ ] Phase 6 — Terminal / Shell Tool
+- [x] Phase 6 — Terminal / Shell Tool
 - [ ] Phase 7 — Agent Loop
 - [ ] Phase 8 — Repository Context Engine
 - [ ] Phase 9 — Planning System
