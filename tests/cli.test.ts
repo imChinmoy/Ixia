@@ -1,8 +1,21 @@
-import { describe, it, expect, vi } from 'vitest';
+import process from 'node:process';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createProgram } from '../apps/cli/src/cli.js';
 import { startCommand } from '../apps/cli/src/commands/start.command.js';
+import * as llmModule from '@sora/llm';
 
 describe('CLI Commander Program', () => {
+  const originalEnv = { ...process.env };
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    vi.restoreAllMocks();
+  });
+
   it('should have correct name, description, and version', () => {
     const program = createProgram();
     expect(program.name()).toBe('sora');
@@ -26,16 +39,28 @@ describe('CLI Commander Program', () => {
     expect(helpInfo).toContain('Optional prompt');
   });
 
-  it('should execute one-shot mode when prompt is provided', async () => {
-    const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+  it('should execute one-shot mode and stream output when prompt is provided', async () => {
+    process.env['GROQ_PROVIDER_KEY'] = 'test-key';
+
+    // Mock ConversationManager sendMessage generator
+    vi.spyOn(llmModule.ConversationManager.prototype, 'sendMessage').mockImplementation(
+      async function* () {
+        yield { type: 'text_delta', content: 'Streamed response chunk' };
+        yield { type: 'completed' };
+      },
+    );
+
+    let output = '';
+    const stdoutSpy = vi.spyOn(process.stdout, 'write').mockImplementation((chunk: unknown) => {
+      output += String(chunk);
+      return true;
+    });
 
     await startCommand({ prompt: 'test query' });
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('S O R A'));
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('test query'));
-    expect(consoleSpy).toHaveBeenCalledWith('Sora CLI is running in Phase 1.');
-    expect(consoleSpy).toHaveBeenCalledWith('LLM integration will be added in Phase 2.');
+    expect(output).toContain('Sora:');
+    expect(output).toContain('Streamed response chunk');
 
-    consoleSpy.mockRestore();
+    stdoutSpy.mockRestore();
   });
 });

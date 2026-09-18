@@ -35,7 +35,18 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     );
   }
 
-  // System or assistant message
+  if (message.type === 'assistant') {
+    return (
+      <Box flexDirection="column" marginY={1}>
+        <Text bold color="cyan">
+          Sora:
+        </Text>
+        <Text>{message.content}</Text>
+      </Box>
+    );
+  }
+
+  // System or exit message
   return (
     <Box marginY={0}>
       <Text>{message.content}</Text>

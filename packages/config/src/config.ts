@@ -1,22 +1,34 @@
+import process from 'node:process';
 import { ConfigurationError } from '@sora/core';
-import { DEFAULT_CONFIG } from './defaults.js';
+import { DEFAULT_CONFIG, DEFAULT_LLM_MODEL } from './defaults.js';
+
+export interface LLMConfig {
+  provider: 'groq';
+  model: string;
+  apiKey: string;
+}
 
 export interface SoraConfig {
   version: string;
   theme: 'default';
+  llm: LLMConfig;
   [key: string]: unknown;
 }
 
 export interface ConfigOptions {
   overrides?: Partial<SoraConfig>;
   configFile?: string;
+  skipEnv?: boolean;
 }
 
 export class ConfigManager {
   private config: SoraConfig;
 
   constructor(initialConfig: SoraConfig = DEFAULT_CONFIG) {
-    this.config = { ...initialConfig };
+    this.config = {
+      ...initialConfig,
+      llm: { ...initialConfig.llm },
+    };
   }
 
   get<K extends keyof SoraConfig>(key: K): SoraConfig[K] {
@@ -32,15 +44,53 @@ export class ConfigManager {
   }
 
   merge(partial: Partial<SoraConfig>): void {
-    this.config = { ...this.config, ...partial };
+    this.config = {
+      ...this.config,
+      ...partial,
+      llm: {
+        ...this.config.llm,
+        ...(partial.llm ?? {}),
+      },
+    };
+  }
+}
+
+export function loadEnv(): void {
+  try {
+    if (typeof process.loadEnvFile === 'function') {
+      process.loadEnvFile();
+    }
+  } catch {
+    // If .env is missing or invalid, fail silently here.
+    // Explicit validation will report missing variables to the user.
   }
 }
 
 export function loadConfig(options?: ConfigOptions): SoraConfig {
+  if (!options?.skipEnv) {
+    loadEnv();
+  }
+
   try {
-    const config: SoraConfig = {
+    const envApiKey = process.env['GROQ_PROVIDER_KEY'] ?? '';
+    const envModel = process.env['SORA_LLM_MODEL'] || DEFAULT_LLM_MODEL;
+
+    const baseConfig: SoraConfig = {
       ...DEFAULT_CONFIG,
+      llm: {
+        provider: 'groq',
+        model: envModel,
+        apiKey: envApiKey,
+      },
+    };
+
+    const config: SoraConfig = {
+      ...baseConfig,
       ...(options?.overrides ?? {}),
+      llm: {
+        ...baseConfig.llm,
+        ...(options?.overrides?.llm ?? {}),
+      },
     };
 
     if (!config.version) {
@@ -58,6 +108,15 @@ export function loadConfig(options?: ConfigOptions): SoraConfig {
   }
 }
 
+export function validateLLMConfig(config: LLMConfig): void {
+  if (!config.apiKey || config.apiKey.trim().length === 0) {
+    throw new ConfigurationError('Missing GROQ_PROVIDER_KEY.\n\nPlease add it to your .env file.');
+  }
+}
+
 export function getDefaultConfig(): SoraConfig {
-  return { ...DEFAULT_CONFIG };
+  return {
+    ...DEFAULT_CONFIG,
+    llm: { ...DEFAULT_CONFIG.llm },
+  };
 }

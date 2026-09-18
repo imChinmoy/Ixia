@@ -13,6 +13,7 @@ export default defineConfig({
       '@sora/config': path.resolve(__dirname, './packages/config/src/index.ts'),
       '@sora/logger': path.resolve(__dirname, './packages/logger/src/index.ts'),
       '@sora/shared': path.resolve(__dirname, './packages/shared/src/index.ts'),
+      '@sora/llm': path.resolve(__dirname, './packages/llm/src/index.ts'),
     },
   },
 });

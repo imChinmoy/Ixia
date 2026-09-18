@@ -17,6 +17,7 @@
   "dependencies": {
     "@sora/config": "workspace:*",
     "@sora/core": "workspace:*",
+    "@sora/llm": "workspace:*",
     "@sora/logger": "workspace:*",
     "@sora/shared": "workspace:*",
     "chalk": "^5.4.1",

@@ -3,7 +3,7 @@ import { Box, Text, useInput, useStdin } from 'ink';
 import { PROMPT_SYMBOL } from '@sora/core';
 
 export interface PromptProps {
-  onSubmit: (value: string) => void;
+  onSubmit: (value: string) => Promise<void> | void;
   isDisabled?: boolean;
 }
 
@@ -21,7 +21,7 @@ export const Prompt: React.FC<PromptProps> = ({ onSubmit, isDisabled = false }) 
       if (key.return) {
         const trimmed = input.trim();
         if (trimmed.length > 0) {
-          onSubmit(trimmed);
+          void onSubmit(trimmed);
           setInput('');
         }
         return;
@@ -50,13 +50,12 @@ export const Prompt: React.FC<PromptProps> = ({ onSubmit, isDisabled = false }) 
       return;
     }
 
-    const onData = (data: Buffer | string): void => {
-      if (isDisabled) return;
+    const onData = async (data: Buffer | string): Promise<void> => {
       const lines = data.toString().split(/\r?\n/);
       for (const line of lines) {
         const trimmed = line.trim();
         if (trimmed.length > 0) {
-          onSubmit(trimmed);
+          await onSubmit(trimmed);
         }
       }
     };

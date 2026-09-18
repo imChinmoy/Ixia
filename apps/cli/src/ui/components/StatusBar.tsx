@@ -5,12 +5,14 @@ import { formatPath } from '@sora/shared';
 
 export interface StatusBarProps {
   cwd?: string;
+  model?: string;
   mode?: string;
   showMode?: boolean;
 }
 
 export const StatusBar: React.FC<StatusBarProps> = ({
   cwd = process.cwd(),
+  model,
   mode = 'Interactive',
   showMode = false,
 }) => {
@@ -22,6 +24,12 @@ export const StatusBar: React.FC<StatusBarProps> = ({
         <Text color="gray">Directory: </Text>
         <Text color="cyan">{formattedCwd}</Text>
       </Box>
+      {model && (
+        <Box>
+          <Text color="gray">Model: </Text>
+          <Text color="green">{model}</Text>
+        </Box>
+      )}
       {showMode && (
         <Box>
           <Text color="gray">Mode: </Text>

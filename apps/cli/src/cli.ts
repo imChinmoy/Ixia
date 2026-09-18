@@ -40,7 +40,11 @@ export async function run(argv: string[] = process.argv): Promise<void> {
     await program.parseAsync(argv);
   } catch (error) {
     if (isSoraError(error)) {
-      console.error(`Error: ${error.message}`);
+      if (error.name === 'ConfigurationError') {
+        console.error(`Sora configuration error:\n\n${error.message}`);
+      } else {
+        console.error(`Error: ${error.message}`);
+      }
       process.exit(error.exitCode);
     }
 
