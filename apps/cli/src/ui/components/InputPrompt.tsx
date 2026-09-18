@@ -88,7 +88,7 @@ export const InputPrompt: React.FC<InputPromptProps> = ({
         ›{' '}
       </Text>
       {input.length === 0 ? (
-        <Text color={theme.muted}>{isDisabled ? 'Sora is thinking...' : placeholder}</Text>
+        <Text color={theme.muted}>{isDisabled ? 'Ixia is thinking...' : placeholder}</Text>
       ) : (
         <Text color={theme.text}>{input}</Text>
       )}

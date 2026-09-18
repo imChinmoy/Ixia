@@ -6,19 +6,19 @@ import {
   createSystemMessage,
   createAssistantToolCallMessage,
   createToolResultMessage,
-} from '@sora/core';
+} from '@ixia/core';
 
 describe('Message Model & Factories', () => {
   it('should create message with generated UUID and current timestamp by default', () => {
     const before = new Date();
-    const msg = createMessage('user', 'Hello, Sora!');
+    const msg = createMessage('user', 'Hello, Ixia!');
     const after = new Date();
 
     expect(msg.id).toBeDefined();
     expect(typeof msg.id).toBe('string');
     expect(msg.id.length).toBeGreaterThan(10);
     expect(msg.role).toBe('user');
-    expect(msg.content).toBe('Hello, Sora!');
+    expect(msg.content).toBe('Hello, Ixia!');
     expect(msg.createdAt).toBeInstanceOf(Date);
     expect(msg.createdAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
     expect(msg.createdAt.getTime()).toBeLessThanOrEqual(after.getTime());

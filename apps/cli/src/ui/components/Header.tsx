@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { DEFAULT_VERSION } from '@sora/core';
+import { DEFAULT_VERSION } from '@ixia/core';
 import { theme } from '../theme/theme.js';
 
 export interface HeaderProps {
@@ -13,7 +13,7 @@ export const Header: React.FC<HeaderProps> = ({ version = DEFAULT_VERSION, compa
     return (
       <Box width="100%" justifyContent="space-between" marginBottom={1}>
         <Text bold color={theme.primary}>
-          ✦ SORA
+          ✦ IXIA
         </Text>
         <Text color={theme.muted}>v{version}</Text>
       </Box>
@@ -23,7 +23,7 @@ export const Header: React.FC<HeaderProps> = ({ version = DEFAULT_VERSION, compa
   return (
     <Box width="100%" justifyContent="center" marginBottom={1}>
       <Text color={theme.muted}>
-        sora <Text color={theme.dim}>—</Text> AI Coding Assistant
+        ixia <Text color={theme.dim}>—</Text> AI Coding Assistant
       </Text>
     </Box>
   );

@@ -7,8 +7,8 @@ import {
   ConfigManager,
   DEFAULT_CONFIG,
   DEFAULT_LLM_MODEL,
-} from '@sora/config';
-import { ConfigurationError } from '@sora/core';
+} from '@ixia/config';
+import { ConfigurationError } from '@ixia/core';
 
 describe('Config Package', () => {
   const originalEnv = { ...process.env };
@@ -35,14 +35,14 @@ describe('Config Package', () => {
     expect(config.llm.apiKey).toBe('test-key-12345');
   });
 
-  it('should load default model when SORA_LLM_MODEL is not set', () => {
-    delete process.env['SORA_LLM_MODEL'];
+  it('should load default model when IXIA_LLM_MODEL is not set', () => {
+    delete process.env['IXIA_LLM_MODEL'];
     const config = loadConfig({ skipEnv: true });
     expect(config.llm.model).toBe('openai/gpt-oss-120b');
   });
 
-  it('should load custom model when SORA_LLM_MODEL is set', () => {
-    process.env['SORA_LLM_MODEL'] = 'custom-test-model';
+  it('should load custom model when IXIA_LLM_MODEL is set', () => {
+    process.env['IXIA_LLM_MODEL'] = 'custom-test-model';
     const config = loadConfig({ skipEnv: true });
     expect(config.llm.model).toBe('custom-test-model');
   });

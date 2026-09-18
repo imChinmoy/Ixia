@@ -2,8 +2,8 @@ import process from 'node:process';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createProgram } from '../apps/cli/src/cli.js';
 import { startCommand } from '../apps/cli/src/commands/start.command.js';
-import * as llmModule from '@sora/llm';
-import { AgentRuntime } from '@sora/agent';
+import * as llmModule from '@ixia/llm';
+import { AgentRuntime } from '@ixia/agent';
 
 describe('CLI Commander Program', () => {
   const originalEnv = { ...process.env };
@@ -19,7 +19,7 @@ describe('CLI Commander Program', () => {
 
   it('should have correct name, description, and version', () => {
     const program = createProgram();
-    expect(program.name()).toBe('sora');
+    expect(program.name()).toBe('ixia');
     expect(program.description()).toBe('AI coding agent');
     expect(program.version()).toBe('0.2.0');
   });
@@ -34,7 +34,7 @@ describe('CLI Commander Program', () => {
   it('should format help output properly', () => {
     const program = createProgram();
     const helpInfo = program.helpInformation();
-    expect(helpInfo).toContain('Usage: sora [options] [prompt]');
+    expect(helpInfo).toContain('Usage: ixia [options] [prompt]');
     expect(helpInfo).toContain('-v, --version');
     expect(helpInfo).toContain('-h, --help');
     expect(helpInfo).toContain('Optional prompt');
@@ -72,7 +72,7 @@ describe('CLI Commander Program', () => {
 
     await startCommand({ prompt: 'test query' });
 
-    expect(output).toContain('Sora:');
+    expect(output).toContain('Ixia:');
     expect(output).toContain('Streamed response chunk');
 
     stdoutSpy.mockRestore();

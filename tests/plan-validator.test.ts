@@ -6,7 +6,7 @@ import {
   PlanDependencyError,
   type Plan,
   type PlanStep,
-} from '@sora/planner';
+} from '@ixia/planner';
 
 describe('PlanValidator', () => {
   const validator = new PlanValidator();

@@ -2,14 +2,14 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { PathService, WorkspaceViolationError, InvalidPathError } from '@sora/filesystem';
+import { PathService, WorkspaceViolationError, InvalidPathError } from '@ixia/filesystem';
 
 describe('PathService & Workspace Security', () => {
   let tempDir: string;
   let service: PathService;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-path-test-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-path-test-'));
     service = new PathService();
   });
 
@@ -61,7 +61,7 @@ describe('PathService & Workspace Security', () => {
 
   it('should detect and reject symlinks resolving outside workspace', async () => {
     // Create an external directory
-    const externalDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-external-'));
+    const externalDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-external-'));
     const externalFile = path.join(externalDir, 'secret.txt');
     await fs.writeFile(externalFile, 'classified data');
 

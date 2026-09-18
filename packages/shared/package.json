@@ -1,5 +1,5 @@
 {
-  "name": "@sora/shared",
+  "name": "@ixia/shared",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*",
+    "@ixia/core": "workspace:*",
     "chalk": "^5.4.1"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "@sora/agent",
+  "name": "@ixia/agent",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,11 +10,11 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*",
-    "@sora/tools": "workspace:*",
-    "@sora/context": "workspace:*",
-    "@sora/planner": "workspace:*"
+    "@ixia/core": "workspace:*",
+    "@ixia/logger": "workspace:*",
+    "@ixia/tools": "workspace:*",
+    "@ixia/context": "workspace:*",
+    "@ixia/planner": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

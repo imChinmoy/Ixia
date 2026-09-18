@@ -4,7 +4,7 @@ import {
   InvalidPlanTransitionError,
   PlanDependencyError,
   type PlanStep,
-} from '@sora/planner';
+} from '@ixia/planner';
 
 describe('PlanState Model and Lifecycle', () => {
   const sampleSteps: PlanStep[] = [

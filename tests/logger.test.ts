@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { Logger, createLogger, type LogRecord } from '@sora/logger';
+import { Logger, createLogger, type LogRecord } from '@ixia/logger';
 
 describe('Logger Package', () => {
   it('should not output when level is silent', () => {

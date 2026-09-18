@@ -1,4 +1,4 @@
-import { ToolError, type ToolErrorOptions } from '@sora/tools';
+import { ToolError, type ToolErrorOptions } from '@ixia/tools';
 
 export class FilesystemError extends ToolError {
   constructor(message: string, code = 'FILESYSTEM_ERROR', options?: ToolErrorOptions) {

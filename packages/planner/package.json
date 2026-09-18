@@ -1,5 +1,5 @@
 {
-  "name": "@sora/planner",
+  "name": "@ixia/planner",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,9 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/context": "workspace:*",
-    "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*"
+    "@ixia/context": "workspace:*",
+    "@ixia/core": "workspace:*",
+    "@ixia/logger": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

@@ -1,10 +1,10 @@
 # Filesystem Intelligence Architecture
 
-The **Filesystem Intelligence** layer (`@sora/filesystem`) provides Sora with read-only inspection capabilities across a developer's local project repository. It bridges the generic Tool System from Phase 4 with the physical filesystem through a robust security and path-boundary abstraction.
+The **Filesystem Intelligence** layer (`@ixia/filesystem`) provides Ixia with read-only inspection capabilities across a developer's local project repository. It bridges the generic Tool System from Phase 4 with the physical filesystem through a robust security and path-boundary abstraction.
 
 ```text
                     ┌──────────────────┐
-                    │    Sora CLI/UI   │
+                    │    Ixia CLI/UI   │
                     └────────┬─────────┘
                              │
                              ▼
@@ -73,14 +73,14 @@ Crucially, this phase is strictly **read-only observation**. Mutation capabiliti
 The architecture strictly decouples tool abstractions, business services, and low-level filesystem calls:
 
 ```text
-Tool Layer (@sora/filesystem/tools)
+Tool Layer (@ixia/filesystem/tools)
   ├── ListDirectoryTool
   ├── ReadFileTool
   ├── SearchFilesTool
   └── FileInfoTool
          │
          ▼
-Service Layer (@sora/filesystem/services)
+Service Layer (@ixia/filesystem/services)
   ├── FilesystemService (high-level operations & error mapping)
   ├── PathService (path validation, canonicalization & boundary enforcement)
   └── FileSearchService (bounded recursive traversal & token filtering)
@@ -126,7 +126,7 @@ Paths containing null bytes (`\0`) or malformed characters are immediately rejec
 
 ## 5. Workspace Boundary Protection (Anti-Traversal & Symlinks)
 
-Sora enforces strict workspace containment to prevent unintentional exposure of sensitive host system files:
+Ixia enforces strict workspace containment to prevent unintentional exposure of sensitive host system files:
 
 1. **Logical Traversal Check**:
    Target paths resolved against workspace root are verified to ensure they reside strictly within `workspaceRoot`:
@@ -228,12 +228,12 @@ By default, recursive search ignores high-volume non-source directories:
 
 ## 11. Structured Error Hierarchy
 
-Low-level Node `fs` errors (`ENOENT`, `EACCES`, `ENOTDIR`) are normalized into structured Sora errors extending `ToolError`:
+Low-level Node `fs` errors (`ENOENT`, `EACCES`, `ENOTDIR`) are normalized into structured Ixia errors extending `ToolError`:
 
 ```text
-SoraError (@sora/core)
-   └── ToolError (@sora/tools)
-         └── FilesystemError (@sora/filesystem)
+IxiaError (@ixia/core)
+   └── ToolError (@ixia/tools)
+         └── FilesystemError (@ixia/filesystem)
                ├── FileNotFoundError
                ├── DirectoryNotFoundError
                ├── WorkspaceViolationError
@@ -250,7 +250,7 @@ Every error retains the offending path, normalized error code, and underlying ca
 
 ## 12. Security Considerations
 
-Phase 5 establishes Sora's first real security perimeter:
+Phase 5 establishes Ixia's first real security perimeter:
 
 - **Strict Boundary Check**: No operation can access paths outside the resolved workspace directory.
 - **Symlink Jail**: Symlinks pointing to target paths outside the workspace are blocked.

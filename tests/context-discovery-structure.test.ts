@@ -10,7 +10,7 @@ import {
   FileDiscovery,
   StructureBuilder,
   type RepositoryFile,
-} from '@sora/context';
+} from '@ixia/context';
 
 describe('Context Discovery & Structure (Phase 8)', () => {
   describe('IgnoreManager', () => {
@@ -102,7 +102,7 @@ coverage/
     let tempDir: string;
 
     beforeEach(async () => {
-      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-discovery-test-'));
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-discovery-test-'));
       await fs.mkdir(path.join(tempDir, 'src'), { recursive: true });
       await fs.mkdir(path.join(tempDir, 'node_modules', 'foo'), { recursive: true });
       await fs.mkdir(path.join(tempDir, '.git'), { recursive: true });

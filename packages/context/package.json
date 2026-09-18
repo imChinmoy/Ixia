@@ -1,5 +1,5 @@
 {
-  "name": "@sora/context",
+  "name": "@ixia/context",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,9 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*",
-    "@sora/filesystem": "workspace:*",
-    "@sora/logger": "workspace:*"
+    "@ixia/core": "workspace:*",
+    "@ixia/filesystem": "workspace:*",
+    "@ixia/logger": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

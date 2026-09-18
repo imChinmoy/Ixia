@@ -7,7 +7,7 @@ import {
   InvalidModelError,
   toGroqMessages,
   type Message,
-} from '@sora/llm';
+} from '@ixia/llm';
 import type Groq from 'groq-sdk';
 
 
@@ -178,7 +178,7 @@ describe('GroqProvider', () => {
     }
   });
 
-  it('should translate Sora tool definitions into Groq format and emit tool_call events', async () => {
+  it('should translate Ixia tool definitions into Groq format and emit tool_call events', async () => {
     async function* createMockToolStream(): AsyncIterable<{
       choices: Array<{
         delta: {
@@ -281,7 +281,7 @@ describe('GroqProvider', () => {
       expect.any(Object),
     );
 
-    // Verify emitted Sora LLM events
+    // Verify emitted Ixia LLM events
     expect(events).toEqual([
       { type: 'text_delta', content: 'Calling echo...' },
       {
@@ -296,7 +296,7 @@ describe('GroqProvider', () => {
     ]);
   });
 
-  it('should map various Sora messages to Groq chat completion messages using toGroqMessages', () => {
+  it('should map various Ixia messages to Groq chat completion messages using toGroqMessages', () => {
     const messages: Message[] = [
       {
         id: '1',

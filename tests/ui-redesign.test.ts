@@ -130,7 +130,7 @@ describe('UI Redesign - Content & Component Grounding', () => {
     expect(typeof Spinner).toBe('function');
   });
 
-  it('should define bold, weighted pixel-art SORA logo lines and gradient', () => {
+  it('should define bold, weighted pixel-art IXIA logo lines and gradient', () => {
     expect(SORA_PIXEL_LOGO).toHaveLength(6);
     expect(SORA_PIXEL_LOGO[0]).toContain('███████╗');
     expect(SORA_LOGO_GRADIENT).toHaveLength(6);

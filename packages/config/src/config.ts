@@ -2,7 +2,7 @@ import process from 'node:process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ConfigurationError } from '@sora/core';
+import { ConfigurationError } from '@ixia/core';
 import { DEFAULT_CONFIG, DEFAULT_LLM_MODEL } from './defaults.js';
 
 export interface LLMConfig {
@@ -11,7 +11,7 @@ export interface LLMConfig {
   apiKey: string;
 }
 
-export interface SoraConfig {
+export interface IxiaConfig {
   version: string;
   theme: 'default';
   llm: LLMConfig;
@@ -19,34 +19,34 @@ export interface SoraConfig {
 }
 
 export interface ConfigOptions {
-  overrides?: Partial<SoraConfig>;
+  overrides?: Partial<IxiaConfig>;
   configFile?: string;
   skipEnv?: boolean;
 }
 
 export class ConfigManager {
-  private config: SoraConfig;
+  private config: IxiaConfig;
 
-  constructor(initialConfig: SoraConfig = DEFAULT_CONFIG) {
+  constructor(initialConfig: IxiaConfig = DEFAULT_CONFIG) {
     this.config = {
       ...initialConfig,
       llm: { ...initialConfig.llm },
     };
   }
 
-  get<K extends keyof SoraConfig>(key: K): SoraConfig[K] {
+  get<K extends keyof IxiaConfig>(key: K): IxiaConfig[K] {
     return this.config[key];
   }
 
-  getAll(): Readonly<SoraConfig> {
+  getAll(): Readonly<IxiaConfig> {
     return Object.freeze({ ...this.config });
   }
 
-  set<K extends keyof SoraConfig>(key: K, value: SoraConfig[K]): void {
+  set<K extends keyof IxiaConfig>(key: K, value: IxiaConfig[K]): void {
     this.config[key] = value;
   }
 
-  merge(partial: Partial<SoraConfig>): void {
+  merge(partial: Partial<IxiaConfig>): void {
     this.config = {
       ...this.config,
       ...partial,
@@ -125,16 +125,16 @@ export function loadEnv(customPath?: string): void {
   }
 }
 
-export function loadConfig(options?: ConfigOptions): SoraConfig {
+export function loadConfig(options?: ConfigOptions): IxiaConfig {
   if (!options?.skipEnv) {
     loadEnv();
   }
 
   try {
     const envApiKey = process.env['GROQ_PROVIDER_KEY'] ?? '';
-    const envModel = process.env['SORA_LLM_MODEL'] || DEFAULT_LLM_MODEL;
+    const envModel = process.env['IXIA_LLM_MODEL'] || DEFAULT_LLM_MODEL;
 
-    const baseConfig: SoraConfig = {
+    const baseConfig: IxiaConfig = {
       ...DEFAULT_CONFIG,
       llm: {
         provider: 'groq',
@@ -143,7 +143,7 @@ export function loadConfig(options?: ConfigOptions): SoraConfig {
       },
     };
 
-    const config: SoraConfig = {
+    const config: IxiaConfig = {
       ...baseConfig,
       ...(options?.overrides ?? {}),
       llm: {
@@ -173,7 +173,7 @@ export function validateLLMConfig(config: LLMConfig): void {
   }
 }
 
-export function getDefaultConfig(): SoraConfig {
+export function getDefaultConfig(): IxiaConfig {
   return {
     ...DEFAULT_CONFIG,
     llm: { ...DEFAULT_CONFIG.llm },

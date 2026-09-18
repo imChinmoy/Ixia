@@ -5,15 +5,15 @@ import {
   type LLMEvent,
   type LLMRequestOptions,
   type Message,
-} from '@sora/core';
-import { ToolRegistry, ToolExecutor, type Tool, type ToolExecutionContext, type ToolSchema } from '@sora/tools';
+} from '@ixia/core';
+import { ToolRegistry, ToolExecutor, type Tool, type ToolExecutionContext, type ToolSchema } from '@ixia/tools';
 import {
   AgentRuntime,
   AgentBusyError,
   AgentIterationLimitError,
   AgentToolCallLimitError,
   type AgentEvent,
-} from '@sora/agent';
+} from '@ixia/agent';
 
 class ScriptableLLMProvider implements LLMProvider {
   readonly name = 'scriptable-mock';
@@ -118,7 +118,7 @@ describe('AgentRuntime & AgentLoop (Phase 7)', () => {
           toolCall: {
             id: 'call_1',
             name: 'echo_tool',
-            arguments: { text: 'Sora is active' },
+            arguments: { text: 'Ixia is active' },
           },
         };
         yield { type: 'completed' };
@@ -128,9 +128,9 @@ describe('AgentRuntime & AgentLoop (Phase 7)', () => {
         const lastMsg = messages[messages.length - 1];
         expect(lastMsg?.role).toBe('tool');
         expect(lastMsg?.toolCallId).toBe('call_1');
-        expect(lastMsg?.content).toContain('Sora is active');
+        expect(lastMsg?.content).toContain('Ixia is active');
 
-        yield { type: 'text_delta', content: 'The tool returned: Sora is active.' };
+        yield { type: 'text_delta', content: 'The tool returned: Ixia is active.' };
         yield { type: 'completed' };
       },
     ]);
@@ -172,9 +172,9 @@ describe('AgentRuntime & AgentLoop (Phase 7)', () => {
     expect(msgs[1]?.toolCalls?.[0]?.name).toBe('echo_tool');
     expect(msgs[2]?.role).toBe('tool');
     expect(msgs[2]?.toolName).toBe('echo_tool');
-    expect(msgs[2]?.content).toContain('Sora is active');
+    expect(msgs[2]?.content).toContain('Ixia is active');
     expect(msgs[3]?.role).toBe('assistant');
-    expect(msgs[3]?.content).toBe('The tool returned: Sora is active.');
+    expect(msgs[3]?.content).toBe('The tool returned: Ixia is active.');
   });
 
   it('should handle multi-step tool calls across multiple iterations', async () => {

@@ -1,5 +1,5 @@
 import process from 'node:process';
-import { PathService } from '@sora/filesystem';
+import { PathService } from '@ixia/filesystem';
 import { ProcessExecutor } from './process-executor.js';
 import type { ShellExecutionOptions, ShellExecutionResult } from '../types/shell.js';
 import { ShellError } from '../errors/shell.errors.js';

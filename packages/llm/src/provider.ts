@@ -1,1 +1,1 @@
-export type { LLMRequestOptions, LLMEvent, LLMProvider } from '@sora/core';
+export type { LLMRequestOptions, LLMEvent, LLMProvider } from '@ixia/core';

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-export interface SoraTheme {
+export interface IxiaTheme {
   primary: string;
   purple: string;
   secondary: string;
@@ -16,7 +16,7 @@ export interface SoraTheme {
   assistant: string;
 }
 
-export const theme: SoraTheme = {
+export const theme: IxiaTheme = {
   primary: '#6366F1', // Indigo / Modern AI Blue
   purple: '#8B5CF6', // Subtle Purple
   secondary: '#38BDF8', // Muted Cyan

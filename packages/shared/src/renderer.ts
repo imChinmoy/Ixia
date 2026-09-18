@@ -1,6 +1,6 @@
 import process from 'node:process';
 import chalk from 'chalk';
-import { PROMPT_SYMBOL } from '@sora/core';
+import { PROMPT_SYMBOL } from '@ixia/core';
 
 export interface TerminalRenderer {
   user(message: string): void;

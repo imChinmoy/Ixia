@@ -5,7 +5,7 @@ import {
   detectPackageManager,
   detectProjectAreas,
   type RepositoryFile,
-} from '@sora/context';
+} from '@ixia/context';
 
 function makeFile(name: string, ext?: string, path = name): RepositoryFile {
   return {

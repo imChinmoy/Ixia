@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DefaultPlanningPolicy } from '@sora/planner';
+import { DefaultPlanningPolicy } from '@ixia/planner';
 
 describe('DefaultPlanningPolicy', () => {
   const policy = new DefaultPlanningPolicy();

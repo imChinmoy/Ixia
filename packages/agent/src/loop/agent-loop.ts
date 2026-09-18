@@ -4,9 +4,9 @@ import {
   createSystemMessage,
   createAssistantToolCallMessage,
   type ConversationManager,
-} from '@sora/core';
-import type { ToolRegistry, ToolExecutor } from '@sora/tools';
-import { logger } from '@sora/logger';
+} from '@ixia/core';
+import type { ToolRegistry, ToolExecutor } from '@ixia/tools';
+import { logger } from '@ixia/logger';
 import type { AgentConfig, AgentEvent, AgentRunOptions } from '../types/agent.js';
 import {
   AgentIterationLimitError,

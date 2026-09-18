@@ -1,8 +1,8 @@
 import process from 'node:process';
-import { DEFAULT_VERSION } from '@sora/core';
-import { formatPath } from '@sora/shared';
+import { DEFAULT_VERSION } from '@ixia/core';
+import { formatPath } from '@ixia/shared';
 
-import type { Plan } from '@sora/planner';
+import type { Plan } from '@ixia/planner';
 
 export interface SlashContext {
   cwd?: string;
@@ -44,7 +44,7 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
       return {
         type: 'help',
         message: [
-          'Sora Commands',
+          'Ixia Commands',
           '',
           '  /help       Show available commands',
           '  /plan       Show active plan',
@@ -55,8 +55,8 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
           '  /model      Show active model',
           '  /config     Show configuration',
           '  /status     Show current session information',
-          '  /exit       Exit Sora',
-          '  /quit       Exit Sora',
+          '  /exit       Exit Ixia',
+          '  /quit       Exit Ixia',
         ].join('\n'),
       };
 
@@ -64,7 +64,7 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
       if (!context.activePlan) {
         return {
           type: 'plan',
-          message: 'No active plan. Sora creates plans automatically for complex multi-step tasks.',
+          message: 'No active plan. Ixia creates plans automatically for complex multi-step tasks.',
         };
       }
 
@@ -142,7 +142,7 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
       return {
         type: 'status',
         message: [
-          'Sora Status',
+          'Ixia Status',
           '',
           `  Version     ${version}`,
           `  Provider    ${provider}`,
@@ -164,7 +164,7 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
       return {
         type: 'config',
         message: [
-          'Sora Configuration',
+          'Ixia Configuration',
           '',
           `  Provider     ${provider}`,
           `  Model        ${model}`,

@@ -1,15 +1,15 @@
-# Sora Architecture Overview
+# Ixia Architecture Overview
 
-Sora is an AI-powered coding and developer CLI designed for terminal-first development workflows.
+Ixia is an AI-powered coding and developer CLI designed for terminal-first development workflows.
 
 ## Design Principles
 
-The primary architectural principle of Sora is **strict separation of concerns**. The UI and terminal presentation layers never contain application, execution, or orchestration logic.
+The primary architectural principle of Ixia is **strict separation of concerns**. The UI and terminal presentation layers never contain application, execution, or orchestration logic.
 
 ### Layered Architecture
 
 ```text
-                    SORA
+                    IXIA
                      │
               ┌──────▼──────┐
               │ CLI Layer   │  Commander.js, argument parsing, commands
@@ -43,13 +43,13 @@ LLM Provider
 
 ## Monorepo Layout
 
-Sora is organized as a pnpm workspace with strict TypeScript and ESM across all packages:
+Ixia is organized as a pnpm workspace with strict TypeScript and ESM across all packages:
 
-- `apps/cli` (`@sora/cli`): The terminal CLI entrypoint, Commander registration, and Ink terminal UI components.
-- `packages/core` (`@sora/core`): Fundamental types, constants, and typed error hierarchies.
-- `packages/config` (`@sora/config`): Configuration management, default settings, and future configuration expansion points.
-- `packages/logger` (`@sora/logger`): Isolated logging abstraction decoupled from standard terminal output.
-- `packages/shared` (`@sora/shared`): Path formatting, terminal box rendering, and terminal rendering interfaces.
+- `apps/cli` (`@ixia/cli`): The terminal CLI entrypoint, Commander registration, and Ink terminal UI components.
+- `packages/core` (`@ixia/core`): Fundamental types, constants, and typed error hierarchies.
+- `packages/config` (`@ixia/config`): Configuration management, default settings, and future configuration expansion points.
+- `packages/logger` (`@ixia/logger`): Isolated logging abstraction decoupled from standard terminal output.
+- `packages/shared` (`@ixia/shared`): Path formatting, terminal box rendering, and terminal rendering interfaces.
 
 ## Current Phases
 

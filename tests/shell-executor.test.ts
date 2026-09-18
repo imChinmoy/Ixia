@@ -7,15 +7,15 @@ import {
   ProcessExecutor,
   ShellError,
   CommandAbortedError,
-} from '@sora/shell';
-import { WorkspaceViolationError } from '@sora/filesystem';
+} from '@ixia/shell';
+import { WorkspaceViolationError } from '@ixia/filesystem';
 
 describe('ShellService and ProcessExecutor', () => {
   let tempDir: string;
   let shellService: ShellService;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-shell-test-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-shell-test-'));
     shellService = new ShellService();
   });
 
@@ -30,13 +30,13 @@ describe('ShellService and ProcessExecutor', () => {
 
   it('should execute a simple command successfully and capture stdout and duration', async () => {
     const result = await shellService.execute(
-      'node -e "console.log(\'Hello Sora Shell\')"',
+      'node -e "console.log(\'Hello Ixia Shell\')"',
       {},
       tempDir,
     );
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout.trim()).toBe('Hello Sora Shell');
+    expect(result.stdout.trim()).toBe('Hello Ixia Shell');
     expect(result.stderr).toBe('');
     expect(result.timedOut).toBe(false);
     expect(result.truncated).toBe(false);

@@ -2,14 +2,14 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { FilesystemService, DirectoryNotFoundError } from '@sora/filesystem';
+import { FilesystemService, DirectoryNotFoundError } from '@ixia/filesystem';
 
 describe('FilesystemService: listDirectory', () => {
   let tempDir: string;
   let service: FilesystemService;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-listdir-test-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-listdir-test-'));
     service = new FilesystemService();
   });
 

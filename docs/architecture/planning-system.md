@@ -1,17 +1,17 @@
 # Planning System Architecture
 
-The **Planning System** (`@sora/planner`) equips Sora with structured, provider-independent planning capabilities. It enables the agent to decompose complex, multi-step engineering tasks into explicit, trackable steps with dependency graphs before execution.
+The **Planning System** (`@ixia/planner`) equips Ixia with structured, provider-independent planning capabilities. It enables the agent to decompose complex, multi-step engineering tasks into explicit, trackable steps with dependency graphs before execution.
 
 ---
 
 ## 1. Architectural Role & Execution Ownership
 
-A key design principle in Sora is that **the Planner does not execute tools directly, nor does it spawn a secondary agent loop**. 
+A key design principle in Ixia is that **the Planner does not execute tools directly, nor does it spawn a secondary agent loop**. 
 
 Instead:
-1. **Planner (`@sora/planner`)** is purely responsible for reasoning, generating, validating, and maintaining the plan's state machine.
-2. **`AgentRuntime` (`@sora/agent`)** orchestrates execution: it queries the planning policy, invokes the generator, advances steps, feeds step-specific plan context into the loop, and tracks status.
-3. **`AgentLoop` (`@sora/agent`)** retains single execution authority for LLM tool invocation turns.
+1. **Planner (`@ixia/planner`)** is purely responsible for reasoning, generating, validating, and maintaining the plan's state machine.
+2. **`AgentRuntime` (`@ixia/agent`)** orchestrates execution: it queries the planning policy, invokes the generator, advances steps, feeds step-specific plan context into the loop, and tracks status.
+3. **`AgentLoop` (`@ixia/agent`)** retains single execution authority for LLM tool invocation turns.
 
 ```mermaid
 sequenceDiagram
@@ -57,7 +57,7 @@ sequenceDiagram
 
 ## 2. Component Architecture
 
-The `@sora/planner` package consists of modular subsystems:
+The `@ixia/planner` package consists of modular subsystems:
 
 ```text
 packages/planner/
@@ -108,7 +108,7 @@ Determines whether a user prompt requires formal planning or should execute dire
 
 ### 2.4 Plan Generator & Parser (`PlanGenerator`, `parsePlanResponse`)
 
-* Builds a structured prompt injecting repository context (from `@sora/context`) and user history.
+* Builds a structured prompt injecting repository context (from `@ixia/context`) and user history.
 * Requests `{ type: 'json_object' }` from LLM providers supporting structured output.
 * Robust JSON extraction:
   1. Regex extraction from ` ```json ... ``` ` or ` ``` ... ``` ` markdown blocks.

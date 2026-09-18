@@ -1,1 +1,1 @@
-export { DEFAULT_SYSTEM_PROMPT } from '@sora/core';
+export { DEFAULT_SYSTEM_PROMPT } from '@ixia/core';

@@ -15,15 +15,15 @@ import { PlanView } from '../components/PlanView.js';
 import { isSlashCommand, handleSlashCommand } from '../slash.js';
 import { useTerminalLayout } from '../layout/terminal-layout.js';
 import type { ToolItem } from '../components/ToolsPanel.js';
-import type { AgentRuntime } from '@sora/agent';
-import type { Plan } from '@sora/planner';
+import type { AgentRuntime } from '@ixia/agent';
+import type { Plan } from '@ixia/planner';
 import {
   EXIT_COMMANDS,
   DEFAULT_VERSION,
   type UIState,
   type MessageItem,
   type ConversationManager,
-} from '@sora/core';
+} from '@ixia/core';
 
 export interface InteractiveScreenProps {
   initialCwd?: string;

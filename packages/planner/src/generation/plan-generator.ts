@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { type LLMProvider, type Message, createSystemMessage, createUserMessage } from '@sora/core';
+import { type LLMProvider, type Message, createSystemMessage, createUserMessage } from '@ixia/core';
 import type { Plan, PlanningInput } from '../types/plan.types.js';
 import { PlanGenerationError } from '../errors/planner.errors.js';
 import { parsePlanResponse } from './plan-parser.js';
@@ -68,7 +68,7 @@ export class PlanGenerator {
 
   private buildPrompt(input: PlanningInput): Message[] {
     const systemInstructions = [
-      'You are Sora Planner, an expert software engineering planner.',
+      'You are Ixia Planner, an expert software engineering planner.',
       'Your task is to analyze the user request and repository context, then generate a structured, ordered, actionable development plan.',
       '',
       'OUTPUT FORMAT:',

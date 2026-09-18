@@ -1,6 +1,6 @@
-import type { ToolCall } from '@sora/core';
-import type { RepositoryContextSnapshot } from '@sora/context';
-import type { Plan, PlanStep } from '@sora/planner';
+import type { ToolCall } from '@ixia/core';
+import type { RepositoryContextSnapshot } from '@ixia/context';
+import type { Plan, PlanStep } from '@ixia/planner';
 
 export type AgentState =
   | 'idle'

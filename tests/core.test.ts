@@ -6,15 +6,15 @@ import {
   PROMPT_SYMBOL,
   EXIT_COMMANDS,
   EXIT_CODES,
-  SoraError,
+  IxiaError,
   ConfigurationError,
   CLIError,
-  isSoraError,
-} from '@sora/core';
+  isIxiaError,
+} from '@ixia/core';
 
 describe('Core Constants', () => {
   it('should define application metadata constants', () => {
-    expect(APP_NAME).toBe('Sora');
+    expect(APP_NAME).toBe('Ixia');
     expect(APP_DESCRIPTION).toBe('AI coding agent');
     expect(DEFAULT_VERSION).toBe('0.2.0');
     expect(PROMPT_SYMBOL).toBe('❯');
@@ -30,14 +30,14 @@ describe('Core Constants', () => {
 });
 
 describe('Core Errors', () => {
-  it('should create SoraError with default and custom codes', () => {
-    const defaultErr = new SoraError('A basic error');
-    expect(defaultErr.name).toBe('SoraError');
+  it('should create IxiaError with default and custom codes', () => {
+    const defaultErr = new IxiaError('A basic error');
+    expect(defaultErr.name).toBe('IxiaError');
     expect(defaultErr.code).toBe('SORA_ERROR');
     expect(defaultErr.exitCode).toBe(1);
-    expect(isSoraError(defaultErr)).toBe(true);
+    expect(isIxiaError(defaultErr)).toBe(true);
 
-    const customErr = new SoraError('Custom error', 'CUSTOM_CODE', 2);
+    const customErr = new IxiaError('Custom error', 'CUSTOM_CODE', 2);
     expect(customErr.code).toBe('CUSTOM_CODE');
     expect(customErr.exitCode).toBe(2);
   });
@@ -46,7 +46,7 @@ describe('Core Errors', () => {
     const configErr = new ConfigurationError('Invalid config');
     expect(configErr.name).toBe('ConfigurationError');
     expect(configErr.code).toBe('CONFIG_ERROR');
-    expect(isSoraError(configErr)).toBe(true);
+    expect(isIxiaError(configErr)).toBe(true);
   });
 
   it('should create CLIError with CLI_ERROR code', () => {
@@ -54,12 +54,12 @@ describe('Core Errors', () => {
     expect(cliErr.name).toBe('CLIError');
     expect(cliErr.code).toBe('CLI_ERROR');
     expect(cliErr.exitCode).toBe(2);
-    expect(isSoraError(cliErr)).toBe(true);
+    expect(isIxiaError(cliErr)).toBe(true);
   });
 
-  it('should return false for non-SoraError in isSoraError', () => {
-    expect(isSoraError(new Error('standard error'))).toBe(false);
-    expect(isSoraError('string error')).toBe(false);
-    expect(isSoraError(null)).toBe(false);
+  it('should return false for non-IxiaError in isIxiaError', () => {
+    expect(isIxiaError(new Error('standard error'))).toBe(false);
+    expect(isIxiaError('string error')).toBe(false);
+    expect(isIxiaError(null)).toBe(false);
   });
 });

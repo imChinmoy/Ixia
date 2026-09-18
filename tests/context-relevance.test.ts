@@ -4,7 +4,7 @@ import {
   RelevanceScorer,
   RelevanceSelector,
   type RepositoryFile,
-} from '@sora/context';
+} from '@ixia/context';
 
 function createFile(
   relPath: string,

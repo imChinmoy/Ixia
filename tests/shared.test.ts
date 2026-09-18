@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import os from 'node:os';
 import path from 'node:path';
-import { formatPath, createHeaderBox, ConsoleTerminalRenderer } from '@sora/shared';
+import { formatPath, createHeaderBox, ConsoleTerminalRenderer } from '@ixia/shared';
 
 describe('Shared Package - formatPath', () => {
   it('should replace home directory with ~', () => {
     const home = os.homedir();
-    const testPath = path.join(home, 'projects', 'sora');
-    expect(formatPath(testPath)).toBe('~/projects/sora');
+    const testPath = path.join(home, 'projects', 'ixia');
+    expect(formatPath(testPath)).toBe('~/projects/ixia');
   });
 
   it('should return ~ when path is home directory itself', () => {

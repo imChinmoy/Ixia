@@ -1,1 +1,1 @@
-export type { LLMEvent } from '@sora/core';
+export type { LLMEvent } from '@ixia/core';

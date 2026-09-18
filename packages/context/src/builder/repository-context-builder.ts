@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { PathService } from '@sora/filesystem';
-import { logger } from '@sora/logger';
+import { PathService } from '@ixia/filesystem';
+import { logger } from '@ixia/logger';
 import type {
   ContextBuildOptions,
   RepositoryContextSnapshot,

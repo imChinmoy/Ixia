@@ -1,4 +1,4 @@
-import type { Tool, ToolRegistry } from '@sora/tools';
+import type { Tool, ToolRegistry } from '@ixia/tools';
 import { ShellService } from '../services/shell.service.js';
 import { ExecuteCommandTool } from './execute-command.tool.js';
 

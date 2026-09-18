@@ -1,4 +1,4 @@
-export const APP_NAME = 'Sora';
+export const APP_NAME = 'Ixia';
 export const APP_DESCRIPTION = 'AI coding agent';
 export const DEFAULT_VERSION = '0.2.0';
 export const PROMPT_SYMBOL = '❯';
@@ -12,7 +12,7 @@ export const EXIT_CODES = {
   SIGINT: 130,
 } as const;
 
-export const DEFAULT_SYSTEM_PROMPT = `You are Sora, an autonomous AI coding assistant running inside the user's terminal.
+export const DEFAULT_SYSTEM_PROMPT = `You are Ixia, an autonomous AI coding assistant running inside the user's terminal.
 
 You have access to tools that allow you to inspect the workspace filesystem and execute shell commands.
 When asked to inspect a project, search for code, read files, or run commands, use the appropriate tools.

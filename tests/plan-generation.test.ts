@@ -4,13 +4,13 @@ import {
   type LLMEvent,
   type LLMRequestOptions,
   type Message,
-} from '@sora/core';
+} from '@ixia/core';
 import {
   PlanGenerator,
   parsePlanResponse,
   PlanGenerationError,
   PlanValidationError,
-} from '@sora/planner';
+} from '@ixia/planner';
 
 class MockLLMProvider implements LLMProvider {
   readonly name = 'mock-llm';

@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { PathService } from '@sora/filesystem';
+import { PathService } from '@ixia/filesystem';
 import type { RepositoryFile } from '../types/context.types.js';
 import { IgnoreManager } from './ignore-rules.js';
 import { isSensitiveFile } from './sensitive-files.js';

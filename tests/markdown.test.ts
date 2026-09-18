@@ -32,7 +32,7 @@ describe('Markdown and Code Renderer Utils', () => {
   });
 
   it('should highlight code lines with syntax colors', () => {
-    const highlighted = highlightCodeLine('const name = "Sora"; // comment');
+    const highlighted = highlightCodeLine('const name = "Ixia"; // comment');
     expect(highlighted).toBeDefined();
     expect(highlighted.length).toBeGreaterThan(0);
   });

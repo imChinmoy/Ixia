@@ -22,7 +22,7 @@ export const Spinner: React.FC<SpinnerProps> = ({ label = 'thinking...' }) => {
   return (
     <Box flexDirection="row" alignItems="center" marginY={1}>
       <Text bold color={theme.primary}>
-        ✦ Sora
+        ✦ Ixia
       </Text>
       <Text color={theme.secondary}> {SPINNER_FRAMES[frameIndex]} </Text>
       <Text color={theme.muted}>{label}</Text>

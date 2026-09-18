@@ -5,16 +5,16 @@ import {
   type LLMEvent,
   type LLMRequestOptions,
   type Message,
-} from '@sora/core';
+} from '@ixia/core';
 import {
   ToolRegistry,
   ToolExecutor,
   type Tool,
   type ToolExecutionContext,
   type ToolSchema,
-} from '@sora/tools';
-import { AgentRuntime, type AgentEvent } from '@sora/agent';
-import { PlannerService } from '@sora/planner';
+} from '@ixia/tools';
+import { AgentRuntime, type AgentEvent } from '@ixia/agent';
+import { PlannerService } from '@ixia/planner';
 
 class ScriptableLLMProvider implements LLMProvider {
   readonly name = 'scriptable-mock';
@@ -207,7 +207,7 @@ describe('AgentRuntime with PlannerService Integration (Phase 9)', () => {
   it('bypasses planning for simple inspection or query requests', async () => {
     const mockProvider = new ScriptableLLMProvider([
       async function* () {
-        yield { type: 'text_delta', content: 'This repository contains Sora CLI.' };
+        yield { type: 'text_delta', content: 'This repository contains Ixia CLI.' };
         yield { type: 'completed' };
       },
     ]);

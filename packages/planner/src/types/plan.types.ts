@@ -1,5 +1,5 @@
-import type { Message } from '@sora/core';
-import type { RepositoryContextSnapshot } from '@sora/context';
+import type { Message } from '@ixia/core';
+import type { RepositoryContextSnapshot } from '@ixia/context';
 
 export type PlanStatus =
   | 'draft'

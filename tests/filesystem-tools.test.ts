@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { ToolRegistry, ToolExecutor, ToolValidationError } from '@sora/tools';
+import { ToolRegistry, ToolExecutor, ToolValidationError } from '@ixia/tools';
 import {
   registerFilesystemTools,
   createFilesystemTools,
@@ -12,7 +12,7 @@ import {
   type ReadFileResult,
   type SearchFilesResult,
   type FileInfoResult,
-} from '@sora/filesystem';
+} from '@ixia/filesystem';
 
 describe('Filesystem Tools Integration with Tool System', () => {
   let tempDir: string;
@@ -20,7 +20,7 @@ describe('Filesystem Tools Integration with Tool System', () => {
   let executor: ToolExecutor;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-tools-integ-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-tools-integ-'));
     registry = new ToolRegistry();
     registerFilesystemTools(registry);
     executor = new ToolExecutor({ registry, defaultCwd: tempDir });
@@ -29,7 +29,7 @@ describe('Filesystem Tools Integration with Tool System', () => {
     await fs.mkdir(path.join(tempDir, 'src'));
     await fs.writeFile(
       path.join(tempDir, 'src', 'index.ts'),
-      'console.log("Hello from Sora");\nexport const answer = 42;\n',
+      'console.log("Hello from Ixia");\nexport const answer = 42;\n',
     );
     await fs.writeFile(
       path.join(tempDir, 'package.json'),
@@ -99,7 +99,7 @@ describe('Filesystem Tools Integration with Tool System', () => {
       {
         id: 'call_search_1',
         name: 'search_files',
-        arguments: { query: 'Hello from Sora' },
+        arguments: { query: 'Hello from Ixia' },
       },
       { cwd: tempDir },
     );
@@ -108,7 +108,7 @@ describe('Filesystem Tools Integration with Tool System', () => {
     const data = result.result as SearchFilesResult;
     expect(data.matches).toHaveLength(1);
     expect(data.matches[0]?.path).toBe('src/index.ts');
-    expect(data.matches[0]?.text).toContain('Hello from Sora');
+    expect(data.matches[0]?.text).toContain('Hello from Ixia');
   });
 
   it('should execute file_info through ToolExecutor', async () => {

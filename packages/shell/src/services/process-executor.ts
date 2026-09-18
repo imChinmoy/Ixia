@@ -21,8 +21,8 @@ export class ProcessExecutor {
 
     const timeoutMs =
       options.timeoutMs ??
-      (process.env['SORA_SHELL_TIMEOUT_MS']
-        ? parseInt(process.env['SORA_SHELL_TIMEOUT_MS'], 10)
+      (process.env['IXIA_SHELL_TIMEOUT_MS']
+        ? parseInt(process.env['IXIA_SHELL_TIMEOUT_MS'], 10)
         : DEFAULT_SHELL_TIMEOUT_MS);
 
     const maxStdoutBytes = options.maxStdoutBytes ?? DEFAULT_MAX_OUTPUT_BYTES;

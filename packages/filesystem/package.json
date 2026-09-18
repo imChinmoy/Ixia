@@ -1,5 +1,5 @@
 {
-  "name": "@sora/filesystem",
+  "name": "@ixia/filesystem",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,9 +10,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*",
-    "@sora/tools": "workspace:*"
+    "@ixia/core": "workspace:*",
+    "@ixia/logger": "workspace:*",
+    "@ixia/tools": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

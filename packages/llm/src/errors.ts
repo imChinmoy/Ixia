@@ -1,6 +1,6 @@
-import { SoraError, EXIT_CODES } from '@sora/core';
+import { IxiaError, EXIT_CODES } from '@ixia/core';
 
-export class LLMError extends SoraError {
+export class LLMError extends IxiaError {
   constructor(message: string, code = 'LLM_ERROR', exitCode: number = EXIT_CODES.ERROR) {
     super(message, code, exitCode);
     this.name = 'LLMError';

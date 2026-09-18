@@ -4,15 +4,15 @@ import process from 'node:process';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
-import { APP_DESCRIPTION, DEFAULT_VERSION, EXIT_CODES, isSoraError } from '@sora/core';
+import { APP_DESCRIPTION, DEFAULT_VERSION, EXIT_CODES, isIxiaError } from '@ixia/core';
 import { startCommand } from './commands/start.command.js';
-import { logger } from '@sora/logger';
+import { logger } from '@ixia/logger';
 
 export function createProgram(): Command {
   const program = new Command();
 
   program
-    .name('sora')
+    .name('ixia')
     .description(APP_DESCRIPTION)
     .version(DEFAULT_VERSION, '-v, --version', 'Show version')
     .argument('[prompt]', 'Optional prompt')
@@ -39,9 +39,9 @@ export async function run(argv: string[] = process.argv): Promise<void> {
   try {
     await program.parseAsync(argv);
   } catch (error) {
-    if (isSoraError(error)) {
+    if (isIxiaError(error)) {
       if (error.name === 'ConfigurationError') {
-        console.error(`Sora configuration error:\n\n${error.message}`);
+        console.error(`Ixia configuration error:\n\n${error.message}`);
       } else {
         console.error(`Error: ${error.message}`);
       }

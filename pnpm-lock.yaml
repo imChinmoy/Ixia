@@ -35,37 +35,37 @@ importers:
 
   apps/cli:
     dependencies:
-      '@sora/agent':
+      '@ixia/agent':
         specifier: workspace:*
         version: link:../../packages/agent
-      '@sora/config':
+      '@ixia/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@sora/context':
+      '@ixia/context':
         specifier: workspace:*
         version: link:../../packages/context
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@sora/filesystem':
+      '@ixia/filesystem':
         specifier: workspace:*
         version: link:../../packages/filesystem
-      '@sora/llm':
+      '@ixia/llm':
         specifier: workspace:*
         version: link:../../packages/llm
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@sora/planner':
+      '@ixia/planner':
         specifier: workspace:*
         version: link:../../packages/planner
-      '@sora/shared':
+      '@ixia/shared':
         specifier: workspace:*
         version: link:../../packages/shared
-      '@sora/shell':
+      '@ixia/shell':
         specifier: workspace:*
         version: link:../../packages/shell
-      '@sora/tools':
+      '@ixia/tools':
         specifier: workspace:*
         version: link:../../packages/tools
       chalk:
@@ -99,19 +99,19 @@ importers:
 
   packages/agent:
     dependencies:
-      '@sora/context':
+      '@ixia/context':
         specifier: workspace:*
         version: link:../context
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
-      '@sora/planner':
+      '@ixia/planner':
         specifier: workspace:*
         version: link:../planner
-      '@sora/tools':
+      '@ixia/tools':
         specifier: workspace:*
         version: link:../tools
     devDependencies:
@@ -127,7 +127,7 @@ importers:
 
   packages/config:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -140,13 +140,13 @@ importers:
 
   packages/context:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/filesystem':
+      '@ixia/filesystem':
         specifier: workspace:*
         version: link:../filesystem
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
     devDependencies:
@@ -171,13 +171,13 @@ importers:
 
   packages/filesystem:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
-      '@sora/tools':
+      '@ixia/tools':
         specifier: workspace:*
         version: link:../tools
     devDependencies:
@@ -193,16 +193,16 @@ importers:
 
   packages/llm:
     dependencies:
-      '@sora/config':
+      '@ixia/config':
         specifier: workspace:*
         version: link:../config
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
-      '@sora/tools':
+      '@ixia/tools':
         specifier: workspace:*
         version: link:../tools
       groq-sdk:
@@ -218,7 +218,7 @@ importers:
 
   packages/logger:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -231,13 +231,13 @@ importers:
 
   packages/planner:
     dependencies:
-      '@sora/context':
+      '@ixia/context':
         specifier: workspace:*
         version: link:../context
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
     devDependencies:
@@ -253,7 +253,7 @@ importers:
 
   packages/shared:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
       chalk:
@@ -269,16 +269,16 @@ importers:
 
   packages/shell:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
-      '@sora/filesystem':
+      '@ixia/filesystem':
         specifier: workspace:*
         version: link:../filesystem
-      '@sora/logger':
+      '@ixia/logger':
         specifier: workspace:*
         version: link:../logger
-      '@sora/tools':
+      '@ixia/tools':
         specifier: workspace:*
         version: link:../tools
     devDependencies:
@@ -294,7 +294,7 @@ importers:
 
   packages/tools:
     dependencies:
-      '@sora/core':
+      '@ixia/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

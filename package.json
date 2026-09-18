@@ -1,10 +1,10 @@
 {
-  "name": "sora-monorepo",
+  "name": "ixia-monorepo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter @sora/cli dev",
+    "dev": "pnpm --filter @ixia/cli dev",
     "build": "pnpm -r build",
     "test": "vitest run",
     "lint": "eslint .",

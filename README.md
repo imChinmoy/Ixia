@@ -1,4 +1,4 @@
-# Sora
+# Ixia
 
 AI coding agent for your terminal.
 
@@ -138,7 +138,7 @@ Phase 9 — Planning System
        ▼            ▼               ▼            ▼
 ┌──────────────┐┌───────────────┐┌──────────────┐┌──────────────┐
 │ Conversation ││Context Engine ││PlanningSystem││ Tool System  │  packages/tools
-│(packages/core││(@sora/context)││(@sora/planner││(Registry/Exec│
+│(packages/core││(@ixia/context)││(@ixia/planner││(Registry/Exec│
 └──────┬───────┘└───────────────┘└──────────────┘└──────┬───────┘
        │  Prompt & Context Generation                   │  Executes Tools
        ▼                                          ┌─────┴─────┐
@@ -174,23 +174,23 @@ Create a `.env` file in the root or in your home directory:
 
 ```env
 GROQ_PROVIDER_KEY=gsk_your_groq_api_key_here
-SORA_LLM_MODEL=openai/gpt-oss-120b
+IXIA_LLM_MODEL=openai/gpt-oss-120b
 ```
 
 ### Usage
 
 ```bash
 # Launch interactive terminal mode
-sora
+ixia
 
 # Run in one-shot mode
-sora "Explain quicksort in 2 sentences"
+ixia "Explain quicksort in 2 sentences"
 
 # Display help information
-sora --help
+ixia --help
 
 # Display version information
-sora --version
+ixia --version
 ```
 
 ### Development Scripts

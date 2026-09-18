@@ -1,5 +1,5 @@
 {
-  "name": "@sora/logger",
+  "name": "@ixia/logger",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/core": "workspace:*"
+    "@ixia/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

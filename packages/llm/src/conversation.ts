@@ -4,4 +4,4 @@ export {
   type ConversationStatus,
   type ConversationState,
   type ConversationEvent,
-} from '@sora/core';
+} from '@ixia/core';

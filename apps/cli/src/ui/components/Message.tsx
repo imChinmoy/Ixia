@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { PROMPT_SYMBOL } from '@sora/core';
-import type { MessageItem } from '@sora/core';
+import { PROMPT_SYMBOL } from '@ixia/core';
+import type { MessageItem } from '@ixia/core';
 
 export interface MessageProps {
   message: MessageItem;
@@ -39,7 +39,7 @@ export const Message: React.FC<MessageProps> = ({ message }) => {
     return (
       <Box flexDirection="column" marginY={1}>
         <Text bold color="cyan">
-          Sora:
+          Ixia:
         </Text>
         <Text>{message.content}</Text>
       </Box>

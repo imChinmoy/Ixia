@@ -1,8 +1,8 @@
-# Sora — LLM Coding CLI Building Guide
+# Ixia — LLM Coding CLI Building Guide
 
 ## Project Vision
 
-**Sora** is an AI-powered developer CLI that can understand a codebase, reason about tasks, use tools, modify files, execute commands, run tests, and iteratively fix problems.
+**Ixia** is an AI-powered developer CLI that can understand a codebase, reason about tasks, use tools, modify files, execute commands, run tests, and iteratively fix problems.
 
 The long-term goal is to build a system conceptually similar to modern coding agents such as Claude Code and Codex CLI.
 
@@ -11,7 +11,7 @@ The long-term goal is to build a system conceptually similar to modern coding ag
 ```text
 User
  ↓
-Sora CLI
+Ixia CLI
  ↓
 Agent Runtime
  ↓
@@ -22,7 +22,7 @@ Tools
 Filesystem / Terminal / Git / Codebase
 ```
 
-> Sora is **not** an attempt to train an LLM from scratch. It is an agentic software layer built around LLMs.
+> Ixia is **not** an attempt to train an LLM from scratch. It is an agentic software layer built around LLMs.
 
 ---
 
@@ -97,12 +97,12 @@ Interactive interface:
 
 ```text
 ╭──────────────────────────────╮
-│          SORA CLI             │
+│          IXIA CLI             │
 ╰──────────────────────────────╯
 
 > hello
 
-Sora:
+Ixia:
 Hello! How can I help?
 
 >
@@ -127,7 +127,7 @@ A clean terminal interface that can receive commands and display responses.
 
 ### Goal
 
-Connect Sora to an actual LLM.
+Connect Ixia to an actual LLM.
 
 ### Initial Provider
 
@@ -136,7 +136,7 @@ Start with **OpenAI**.
 Keep the architecture provider-agnostic.
 
 ```text
-Sora
+Ixia
  ↓
 LLMProvider interface
  ↓
@@ -178,13 +178,13 @@ Then:
 ```text
 > Explain recursion in C++
 
-Sora:
+Ixia:
 ...
 ```
 
 ### Milestone
 
-Sora can have a real streaming conversation with an LLM.
+Ixia can have a real streaming conversation with an LLM.
 
 ---
 
@@ -243,7 +243,7 @@ Add multi-turn conversation:
 > Give me an example.
 ```
 
-Sora remembers the conversation.
+Ixia remembers the conversation.
 
 ### Milestone
 
@@ -298,7 +298,7 @@ User:
 > What is this project's authentication flow?
 ```
 
-Sora:
+Ixia:
 
 ```text
 I'll inspect the repository.
@@ -316,7 +316,7 @@ Then produces an answer based on the actual repository.
 
 ### Goal
 
-Make Sora understand the user's repository.
+Make Ixia understand the user's repository.
 
 Implement:
 
@@ -355,7 +355,7 @@ Restricted:
 
 ### Milestone
 
-Sora can inspect and modify files inside a project.
+Ixia can inspect and modify files inside a project.
 
 ---
 
@@ -363,7 +363,7 @@ Sora can inspect and modify files inside a project.
 
 ### Goal
 
-Allow Sora to execute development commands.
+Allow Ixia to execute development commands.
 
 Implement:
 
@@ -419,7 +419,7 @@ Execution
 Example:
 
 ```text
-Sora wants to run:
+Ixia wants to run:
 
 npm install
 
@@ -428,7 +428,7 @@ Allow? [y/N]
 
 ### Milestone
 
-Sora can inspect, modify, and execute code.
+Ixia can inspect, modify, and execute code.
 
 ---
 
@@ -436,7 +436,7 @@ Sora can inspect, modify, and execute code.
 
 ### Goal
 
-This is the **core of Sora**.
+This is the **core of Ixia**.
 
 Turn the chatbot into an agent.
 
@@ -490,7 +490,7 @@ User:
 > Find why login is failing and fix it.
 ```
 
-Sora can autonomously:
+Ixia can autonomously:
 
 ```text
 search
@@ -512,7 +512,7 @@ test again
 finish
 ```
 
-This is the point where **Sora becomes an actual coding agent**.
+This is the point where **Ixia becomes an actual coding agent**.
 
 ---
 
@@ -578,7 +578,7 @@ dependency graphs
 
 ### Milestone
 
-Sora can identify the relevant parts of a large repository instead of dumping everything into context.
+Ixia can identify the relevant parts of a large repository instead of dumping everything into context.
 
 ---
 
@@ -586,7 +586,7 @@ Sora can identify the relevant parts of a large repository instead of dumping ev
 
 ### Goal
 
-Make Sora plan before making complex changes.
+Make Ixia plan before making complex changes.
 
 Instead of:
 
@@ -633,7 +633,7 @@ Proceed? [y/N]
 
 ### Milestone
 
-Sora can generate and execute structured implementation plans.
+Ixia can generate and execute structured implementation plans.
 
 ---
 
@@ -641,7 +641,7 @@ Sora can generate and execute structured implementation plans.
 
 ### Goal
 
-Teach Sora to verify its own work.
+Teach Ixia to verify its own work.
 
 Agent cycle:
 
@@ -660,7 +660,7 @@ Failure?
 Example:
 
 ```text
-Sora:
+Ixia:
 I've implemented the change.
 
 Running tests...
@@ -680,7 +680,7 @@ Running tests again...
 
 ### Milestone
 
-Sora doesn't stop simply because it successfully edited a file.
+Ixia doesn't stop simply because it successfully edited a file.
 
 It verifies the result.
 
@@ -690,7 +690,7 @@ It verifies the result.
 
 ### Goal
 
-Make Sora Git-aware.
+Make Ixia Git-aware.
 
 Implement tools:
 
@@ -717,7 +717,7 @@ Example:
 ```text
 > sora review
 
-Sora analyzes:
+Ixia analyzes:
 
 ✓ Modified files
 ✓ Git diff
@@ -727,7 +727,7 @@ Sora analyzes:
 
 ### Important
 
-Sora should clearly show changes before destructive Git operations.
+Ixia should clearly show changes before destructive Git operations.
 
 ---
 
@@ -735,7 +735,7 @@ Sora should clearly show changes before destructive Git operations.
 
 ### Goal
 
-Make Sora safe to run on a real machine.
+Make Ixia safe to run on a real machine.
 
 Create permission categories:
 
@@ -787,7 +787,7 @@ process isolation
 
 ### Milestone
 
-Sora can safely operate without giving an LLM unrestricted access to the machine.
+Ixia can safely operate without giving an LLM unrestricted access to the machine.
 
 ---
 
@@ -795,7 +795,7 @@ Sora can safely operate without giving an LLM unrestricted access to the machine
 
 ### Goal
 
-Allow Sora to remember useful information.
+Allow Ixia to remember useful information.
 
 Separate:
 
@@ -840,7 +840,7 @@ Follow Clean Architecture.
 
 ### Milestone
 
-Sora behaves consistently across sessions.
+Ixia behaves consistently across sessions.
 
 ---
 
@@ -848,12 +848,12 @@ Sora behaves consistently across sessions.
 
 ### Goal
 
-Allow Sora to connect to external tools.
+Allow Ixia to connect to external tools.
 
 Architecture:
 
 ```text
-Sora
+Ixia
  │
  ├── Native Tools
  │    ├── Filesystem
@@ -870,7 +870,7 @@ Sora
 
 ### Milestone
 
-Third-party tools can be plugged into Sora.
+Third-party tools can be plugged into Ixia.
 
 ---
 
@@ -960,7 +960,7 @@ Context Builder
 LLM
 ```
 
-This is where Sora starts developing its own **code intelligence layer**.
+This is where Ixia starts developing its own **code intelligence layer**.
 
 ---
 
@@ -968,7 +968,7 @@ This is where Sora starts developing its own **code intelligence layer**.
 
 ### Goal
 
-Make Sora a real open-source developer tool.
+Make Ixia a real open-source developer tool.
 
 Add:
 
@@ -1012,11 +1012,11 @@ Windows
 
 # Final Architecture
 
-The eventual Sora architecture should roughly look like:
+The eventual Ixia architecture should roughly look like:
 
 ```text
                          ┌───────────────┐
-                         │     SORA      │
+                         │     IXIA      │
                          │      CLI      │
                          └───────┬───────┘
                                  │
@@ -1108,7 +1108,7 @@ Don't think about the entire roadmap while coding.
 The first meaningful target is:
 
 ```text
-Sora V0.1
+Ixia V0.1
 
 sora "fix this bug"
        ↓
@@ -1129,6 +1129,6 @@ fix if necessary
 report completion
 ```
 
-Once Sora can reliably perform that loop, **you have built the fundamental architecture of an AI coding agent**.
+Once Ixia can reliably perform that loop, **you have built the fundamental architecture of an AI coding agent**.
 
 Everything after that is about making the system smarter, safer, faster, and more capable.

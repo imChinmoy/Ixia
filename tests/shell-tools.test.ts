@@ -2,15 +2,15 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { ToolRegistry, ToolExecutor, ToolValidationError } from '@sora/tools';
+import { ToolRegistry, ToolExecutor, ToolValidationError } from '@ixia/tools';
 import {
   createShellTools,
   registerShellTools,
   ExecuteCommandTool,
   type ShellExecutionResult,
   CommandAbortedError,
-} from '@sora/shell';
-import { WorkspaceViolationError } from '@sora/filesystem';
+} from '@ixia/shell';
+import { WorkspaceViolationError } from '@ixia/filesystem';
 
 describe('Shell Tools Integration with Tool System', () => {
   let tempDir: string;
@@ -18,7 +18,7 @@ describe('Shell Tools Integration with Tool System', () => {
   let executor: ToolExecutor;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-shell-tool-test-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-shell-tool-test-'));
     registry = new ToolRegistry();
     registerShellTools(registry);
     executor = new ToolExecutor({ registry, defaultCwd: tempDir });

@@ -8,7 +8,7 @@ import {
   ToolSystemError,
   type Tool,
   type ToolCall,
-} from '@sora/tools';
+} from '@ixia/tools';
 
 describe('ToolExecutor', () => {
   const sampleTool: Tool<{ message: string }, string> = {

@@ -1,1 +1,1 @@
-export type { MessageRole, Message } from '@sora/core';
+export type { MessageRole, Message } from '@ixia/core';

@@ -1,4 +1,4 @@
-import type { LLMProvider } from '@sora/core';
+import type { LLMProvider } from '@ixia/core';
 import type { Plan, PlanningInput, PlanningLimits, PlanStep } from './types/plan.types.js';
 import { PlanValidator } from './validation/plan-validator.js';
 import { PlanState } from './state/plan-state.js';

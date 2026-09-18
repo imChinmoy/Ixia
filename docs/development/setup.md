@@ -18,7 +18,7 @@ pnpm install
 ```bash
 pnpm dev
 # or with arguments:
-pnpm --filter @sora/cli dev "hello"
+pnpm --filter @ixia/cli dev "hello"
 ```
 
 3. Build all workspace packages:

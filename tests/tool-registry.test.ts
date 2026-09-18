@@ -4,7 +4,7 @@ import {
   ToolRegistrationError,
   type Tool,
   type ToolExecutionContext,
-} from '@sora/tools';
+} from '@ixia/tools';
 
 describe('ToolRegistry', () => {
   const createMockTool = (name = 'test_tool', description = 'A test tool'): Tool => ({

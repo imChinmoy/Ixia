@@ -1,7 +1,7 @@
-export type SoraVersion = string;
+export type IxiaVersion = string;
 
-export interface SoraRuntime {
-  version: SoraVersion;
+export interface IxiaRuntime {
+  version: IxiaVersion;
   nodeVersion: string;
   cwd: string;
 }
@@ -22,7 +22,7 @@ export interface MessageItem {
 
 export interface CommandContext {
   cwd: string;
-  version: SoraVersion;
+  version: IxiaVersion;
   interactive: boolean;
   prompt?: string;
 }

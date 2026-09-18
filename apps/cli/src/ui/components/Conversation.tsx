@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import type { MessageItem } from '@sora/core';
+import type { MessageItem } from '@ixia/core';
 import { UserMessage } from './UserMessage.js';
 import { AssistantMessage } from './AssistantMessage.js';
 import { HelpPanel } from './HelpPanel.js';

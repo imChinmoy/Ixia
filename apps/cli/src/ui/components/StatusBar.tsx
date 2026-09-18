@@ -1,7 +1,7 @@
 import React from 'react';
 import process from 'node:process';
 import { Box, Text } from 'ink';
-import { formatPath } from '@sora/shared';
+import { formatPath } from '@ixia/shared';
 import { theme } from '../theme/theme.js';
 
 export interface StatusBarProps {

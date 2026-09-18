@@ -8,14 +8,14 @@ import {
   BinaryFileError,
   FileTooLargeError,
   FilesystemError,
-} from '@sora/filesystem';
+} from '@ixia/filesystem';
 
 describe('FilesystemService: readFile', () => {
   let tempDir: string;
   let service: FilesystemService;
 
   beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-readfile-test-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-readfile-test-'));
     service = new FilesystemService();
   });
 

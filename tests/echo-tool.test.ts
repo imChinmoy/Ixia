@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EchoTool, ToolRegistry, ToolExecutor } from '@sora/tools';
+import { EchoTool, ToolRegistry, ToolExecutor } from '@ixia/tools';
 
 describe('EchoTool', () => {
   it('should have correct name, description, and schema', () => {
@@ -21,9 +21,9 @@ describe('EchoTool', () => {
 
   it('should execute successfully directly', async () => {
     const echo = new EchoTool();
-    const result = await echo.execute({ message: 'hello sora' }, { cwd: '/test' });
+    const result = await echo.execute({ message: 'hello ixia' }, { cwd: '/test' });
 
-    expect(result).toBe('hello sora');
+    expect(result).toBe('hello ixia');
   });
 
   it('should execute successfully through ToolRegistry and ToolExecutor', async () => {

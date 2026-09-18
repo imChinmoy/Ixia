@@ -1,4 +1,4 @@
-import type { Tool, ToolRegistry } from '@sora/tools';
+import type { Tool, ToolRegistry } from '@ixia/tools';
 import { FilesystemService } from '../services/filesystem.service.js';
 import { ListDirectoryTool } from './list-directory.tool.js';
 import { ReadFileTool } from './read-file.tool.js';

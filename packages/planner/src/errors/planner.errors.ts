@@ -1,6 +1,6 @@
-import { SoraError } from '@sora/core';
+import { IxiaError } from '@ixia/core';
 
-export class PlannerError extends SoraError {
+export class PlannerError extends IxiaError {
   constructor(message: string, code = 'PLANNER_ERROR') {
     super(message, code);
     this.name = 'PlannerError';

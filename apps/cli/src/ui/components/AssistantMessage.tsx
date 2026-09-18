@@ -16,7 +16,7 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
     <Box flexDirection="column" marginY={1}>
       <Box flexDirection="row" alignItems="center">
         <Text bold color={theme.primary}>
-          ✦ Sora
+          ✦ Ixia
         </Text>
         {isStreaming && (
           <Text color={theme.muted}>

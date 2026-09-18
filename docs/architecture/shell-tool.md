@@ -1,10 +1,10 @@
 # Terminal & Shell Tool Architecture
 
-The **Terminal / Shell Tool** layer (`@sora/shell`) provides Sora with asynchronous, safe shell command execution capabilities. It bridges the generic Tool System from Phase 4 and workspace containment from Phase 5 with OS process execution.
+The **Terminal / Shell Tool** layer (`@ixia/shell`) provides Ixia with asynchronous, safe shell command execution capabilities. It bridges the generic Tool System from Phase 4 and workspace containment from Phase 5 with OS process execution.
 
 ```text
                     ┌──────────────────┐
-                    │    Sora CLI/UI   │
+                    │    Ixia CLI/UI   │
                     └────────┬─────────┘
                              │
                              ▼
@@ -62,7 +62,7 @@ A coding assistant cannot merely read files; it needs the ability to execute dev
 - Inspecting version control state (`git status`, `git diff`).
 - Listing system information (`pwd`, `node --version`, `uname -a`).
 
-The Shell Tool gives Sora the infrastructure to execute shell commands within the project repository under strict operational bounds.
+The Shell Tool gives Ixia the infrastructure to execute shell commands within the project repository under strict operational bounds.
 
 Crucially:
 > **Phase 6 implements the tool capability, not an autonomous agent loop.**
@@ -75,28 +75,28 @@ Crucially:
 The architecture is layered into clean, decoupled components:
 
 ```text
-Tool Layer (@sora/shell/tools)
+Tool Layer (@ixia/shell/tools)
   └── ExecuteCommandTool
          │
          ▼
-Service Layer (@sora/shell/services)
+Service Layer (@ixia/shell/services)
   ├── ShellService (validates inputs & coordinates workspace containment)
   ├── ProcessExecutor (manages child_process spawn, timeouts, buffers, and signals)
-  └── PathService (@sora/filesystem) (enforces workspace directory boundaries)
+  └── PathService (@ixia/filesystem) (enforces workspace directory boundaries)
          │
          ▼
 Node.js Runtime (node:child_process, node:process)
 ```
 
 1. **`ExecuteCommandTool`**: Implements the provider-agnostic `Tool<ExecuteCommandInput, ShellExecutionResult>` interface. It defines the JSON schema for LLM function calling and connects incoming tool calls to `ShellService`.
-2. **`ShellService`**: Validates the command string and delegates path resolution to `PathService` from `@sora/filesystem` to prevent working-directory escape attacks.
+2. **`ShellService`**: Validates the command string and delegates path resolution to `PathService` from `@ixia/filesystem` to prevent working-directory escape attacks.
 3. **`ProcessExecutor`**: Low-level process runner that handles asynchronous execution via `child_process.spawn`, streams stdout/stderr with memory-bounded buffers, enforces timeouts, tracks execution time monotonically, and handles cancellation via `AbortSignal`.
 
 ---
 
 ## 3. Tool Specification: `execute_command`
 
-The shell tool is registered into Sora's `ToolRegistry` under the name `execute_command`:
+The shell tool is registered into Ixia's `ToolRegistry` under the name `execute_command`:
 
 ### Input Schema (`ExecuteCommandInput`)
 
@@ -148,7 +148,7 @@ Runaway processes printing infinite text (e.g., `yes` or infinite test loops) co
   3. A `SIGTERM` signal is immediately dispatched to terminate the runaway process.
 
 ### Timeout Handling & Process Termination
-- Default timeout is 30 seconds (`DEFAULT_SHELL_TIMEOUT_MS = 30_000`), configurable per-execution via `input.timeoutMs` or globally via `SORA_SHELL_TIMEOUT_MS`.
+- Default timeout is 30 seconds (`DEFAULT_SHELL_TIMEOUT_MS = 30_000`), configurable per-execution via `input.timeoutMs` or globally via `IXIA_SHELL_TIMEOUT_MS`.
 - When a timeout occurs:
   1. `timedOut` is marked `true`.
   2. `SIGTERM` is sent to the child process.
@@ -199,12 +199,12 @@ Instead, security is handled systematically:
 
 ## 7. Structured Error Hierarchy
 
-All shell errors extend `ToolError` from `@sora/tools`:
+All shell errors extend `ToolError` from `@ixia/tools`:
 
 ```text
-SoraError (@sora/core)
-   └── ToolError (@sora/tools)
-         └── ShellError (@sora/shell)
+IxiaError (@ixia/core)
+   └── ToolError (@ixia/tools)
+         └── ShellError (@ixia/shell)
                ├── CommandStartError (failed to spawn shell or process)
                ├── CommandTimeoutError (command exceeded timeout limit)
                └── CommandAbortedError (command was cancelled via AbortSignal)

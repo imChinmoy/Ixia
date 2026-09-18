@@ -8,11 +8,11 @@ import {
   type LLMEvent,
   type LLMRequestOptions,
   type Message,
-} from '@sora/core';
-import { ToolRegistry, ToolExecutor } from '@sora/tools';
-import { registerFilesystemTools } from '@sora/filesystem';
-import { registerShellTools } from '@sora/shell';
-import { AgentRuntime } from '@sora/agent';
+} from '@ixia/core';
+import { ToolRegistry, ToolExecutor } from '@ixia/tools';
+import { registerFilesystemTools } from '@ixia/filesystem';
+import { registerShellTools } from '@ixia/shell';
+import { AgentRuntime } from '@ixia/agent';
 
 class IntegrationMockProvider implements LLMProvider {
   readonly name = 'integration-mock';
@@ -39,9 +39,9 @@ class IntegrationMockProvider implements LLMProvider {
 describe('AgentRuntime with Filesystem and Shell Tools Integration (Phase 7)', () => {
   it('should autonomously inspect files and run terminal commands in the workspace', async () => {
     // Set up a temporary sandbox directory
-    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-agent-test-'));
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-agent-test-'));
     const testFile = path.join(tempDir, 'greeting.txt');
-    await fs.writeFile(testFile, 'Hello from Sora Agent Loop!', 'utf-8');
+    await fs.writeFile(testFile, 'Hello from Ixia Agent Loop!', 'utf-8');
 
     try {
       const mockProvider = new IntegrationMockProvider([
@@ -60,7 +60,7 @@ describe('AgentRuntime with Filesystem and Shell Tools Integration (Phase 7)', (
         // Turn 2: Run shell command based on read file
         async function* (messages: Message[]) {
           const toolMsg = messages.find((m) => m.toolCallId === 'call_read');
-          expect(toolMsg?.content).toContain('Hello from Sora Agent Loop!');
+          expect(toolMsg?.content).toContain('Hello from Ixia Agent Loop!');
 
           yield {
             type: 'tool_call',

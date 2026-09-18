@@ -1,16 +1,16 @@
 import process from 'node:process';
 import chalk from 'chalk';
-import { EXIT_CODES, ConversationManager } from '@sora/core';
-import { loadConfig, validateLLMConfig } from '@sora/config';
-import { GroqProvider } from '@sora/llm';
-import { ToolRegistry, ToolExecutor } from '@sora/tools';
-import { registerFilesystemTools } from '@sora/filesystem';
-import { registerShellTools } from '@sora/shell';
-import { AgentRuntime } from '@sora/agent';
-import { RepositoryContextBuilder } from '@sora/context';
-import { PlannerService } from '@sora/planner';
+import { EXIT_CODES, ConversationManager } from '@ixia/core';
+import { loadConfig, validateLLMConfig } from '@ixia/config';
+import { GroqProvider } from '@ixia/llm';
+import { ToolRegistry, ToolExecutor } from '@ixia/tools';
+import { registerFilesystemTools } from '@ixia/filesystem';
+import { registerShellTools } from '@ixia/shell';
+import { AgentRuntime } from '@ixia/agent';
+import { RepositoryContextBuilder } from '@ixia/context';
+import { PlannerService } from '@ixia/planner';
 import { renderInteractiveUI } from '../ui/index.js';
-import { logger } from '@sora/logger';
+import { logger } from '@ixia/logger';
 
 export interface StartCommandOptions {
   prompt?: string;
@@ -61,7 +61,7 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
   if (prompt) {
     // One-shot mode
     logger.debug('Running in one-shot mode with prompt:', prompt);
-    process.stdout.write(`${chalk.bold.cyan('Sora:')}\n\n`);
+    process.stdout.write(`${chalk.bold.cyan('Ixia:')}\n\n`);
 
     const abortController = new AbortController();
     const onSigint = () => {

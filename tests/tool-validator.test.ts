@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateToolInput, type ToolSchema } from '@sora/tools';
+import { validateToolInput, type ToolSchema } from '@ixia/tools';
 
 describe('validateToolInput', () => {
   const sampleSchema: ToolSchema = {

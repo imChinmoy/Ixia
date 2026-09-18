@@ -1,4 +1,4 @@
-import type { Tool, ToolExecutionContext, ToolSchema } from '@sora/tools';
+import type { Tool, ToolExecutionContext, ToolSchema } from '@ixia/tools';
 import type { FilesystemService } from '../services/filesystem.service.js';
 import type { ListDirectoryResult } from '../types/file-entry.js';
 

@@ -1,9 +1,9 @@
 import type Groq from 'groq-sdk';
-import type { ToolDefinition, ToolCall, Message } from '@sora/core';
+import type { ToolDefinition, ToolCall, Message } from '@ixia/core';
 
 
 /**
- * Converts generic Sora ToolDefinition array to Groq ChatCompletionTool array.
+ * Converts generic Ixia ToolDefinition array to Groq ChatCompletionTool array.
  */
 export function toGroqTools(
   tools?: readonly ToolDefinition[],
@@ -28,9 +28,9 @@ export function toGroqTools(
 }
 
 /**
- * Converts an accumulated streaming Groq tool call into a generic Sora ToolCall.
+ * Converts an accumulated streaming Groq tool call into a generic Ixia ToolCall.
  */
-export function toSoraToolCall(accumulated: {
+export function toIxiaToolCall(accumulated: {
   id: string;
   name: string;
   argumentsBuffer: string;
@@ -60,7 +60,7 @@ export function toSoraToolCall(accumulated: {
 }
 
 /**
- * Converts generic Sora Message array to Groq ChatCompletionMessageParam array,
+ * Converts generic Ixia Message array to Groq ChatCompletionMessageParam array,
  * preserving tool calls and tool execution responses.
  */
 export function toGroqMessages(

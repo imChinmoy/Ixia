@@ -12,8 +12,8 @@ export const HelpPanel: React.FC = () => {
     { cmd: '/model', desc: 'Show active model' },
     { cmd: '/config', desc: 'Show current configuration' },
     { cmd: '/status', desc: 'Show session status' },
-    { cmd: '/exit', desc: 'Exit Sora' },
-    { cmd: '/quit', desc: 'Exit Sora' },
+    { cmd: '/exit', desc: 'Exit Ixia' },
+    { cmd: '/quit', desc: 'Exit Ixia' },
   ];
 
   return (
@@ -26,7 +26,7 @@ export const HelpPanel: React.FC = () => {
       marginY={1}
     >
       <Text bold color={theme.text}>
-        Sora Commands
+        Ixia Commands
       </Text>
       <Box height={1} />
       {commands.map((c) => (

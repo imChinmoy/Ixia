@@ -1,6 +1,6 @@
 # Agent Loop & Runtime Architecture
 
-The **Agent Loop** (`@sora/agent`) is the core execution engine of Sora. It elevates Sora from a conversational LLM assistant into an **autonomous developer coding agent** capable of inspecting projects, reading files, executing shell commands, observing results, self-correcting on errors, and completing multi-step developer workflows.
+The **Agent Loop** (`@ixia/agent`) is the core execution engine of Ixia. It elevates Ixia from a conversational LLM assistant into an **autonomous developer coding agent** capable of inspecting projects, reading files, executing shell commands, observing results, self-correcting on errors, and completing multi-step developer workflows.
 
 ```text
                                ┌──────────────────┐
@@ -67,8 +67,8 @@ The **Agent Loop** (`@sora/agent`) is the core execution engine of Sora. It elev
 
 ## 1. Core Principles
 
-1. **Autonomous Multi-Turn Execution**: Sora does not require the user to manually trigger each tool step. If the user asks *"Inspect package.json and run the test suite"*, the loop iteratively reads `package.json`, analyzes dependencies, executes the test command, observes test output, and reports findings.
-2. **Provider Independence**: `@sora/agent` has no hard dependency on Groq or OpenAI SDKs. It coordinates purely via the provider-agnostic interfaces in `@sora/core` and `@sora/tools`.
+1. **Autonomous Multi-Turn Execution**: Ixia does not require the user to manually trigger each tool step. If the user asks *"Inspect package.json and run the test suite"*, the loop iteratively reads `package.json`, analyzes dependencies, executes the test command, observes test output, and reports findings.
+2. **Provider Independence**: `@ixia/agent` has no hard dependency on Groq or OpenAI SDKs. It coordinates purely via the provider-agnostic interfaces in `@ixia/core` and `@ixia/tools`.
 3. **Graceful Tool Failure Recovery**: A failing tool (e.g. invalid arguments, missing file, or command with non-zero exit code) does not crash the agent. The failure is serialized and delivered back to the model as a `role: 'tool'` message. The LLM can observe the failure, analyze the output, attempt an alternative strategy, or explain the issue to the developer.
 4. **Strict Safety Limits**: Autonomous agents must not loop infinitely or exhaust token budgets. Strict, configurable `maxIterations` (default: 10) and `maxToolCalls` (default: 25) prevent infinite execution cycles.
 5. **Responsive Cancellation**: Long-running tool executions (e.g., test suites, builds) can be cleanly cancelled at any time via an `AbortSignal` (Ctrl+C in the terminal), halting both the running tool and the agent loop.
@@ -76,9 +76,9 @@ The **Agent Loop** (`@sora/agent`) is the core execution engine of Sora. It elev
 
 ---
 
-## 2. Package Architecture (`@sora/agent`)
+## 2. Package Architecture (`@ixia/agent`)
 
-The `@sora/agent` package is structured into discrete, single-responsibility modules:
+The `@ixia/agent` package is structured into discrete, single-responsibility modules:
 
 ```text
 packages/agent/src/
@@ -151,7 +151,7 @@ The agent maintains a strict state machine during operation:
 
 ## 4. Message Model Extension (`role: 'tool'`)
 
-To support tool feedback into the conversation history, the core `@sora/core` message model was extended:
+To support tool feedback into the conversation history, the core `@ixia/core` message model was extended:
 
 ```typescript
 export type MessageRole = 'system' | 'user' | 'assistant' | 'tool';
@@ -193,7 +193,7 @@ Provider adapters map these messages into OpenAI/Groq compatible chat completion
   {
     "role": "tool",
     "tool_call_id": "call_123",
-    "content": "{\n  \"name\": \"@sora/core\",\n  \"version\": \"0.2.0\"\n}"
+    "content": "{\n  \"name\": \"@ixia/core\",\n  \"version\": \"0.2.0\"\n}"
   }
   ```
 
@@ -223,10 +223,10 @@ Each turn within `AgentLoop.run()` follows these structured phases:
 ## 6. CLI & UI Integration
 
 ### One-Shot Mode
-In non-interactive mode (`sora "inspect this project"`), the CLI streams real-time tool progress directly to stdout:
+In non-interactive mode (`ixia "inspect this project"`), the CLI streams real-time tool progress directly to stdout:
 
 ```text
-Sora:
+Ixia:
 
 → read_file {"path":"package.json"}
 ✓ read_file

@@ -1,4 +1,4 @@
-import { SoraError, EXIT_CODES } from '@sora/core';
+import { IxiaError, EXIT_CODES } from '@ixia/core';
 
 export interface ToolErrorOptions {
   toolName?: string;
@@ -7,7 +7,7 @@ export interface ToolErrorOptions {
   exitCode?: number;
 }
 
-export class ToolError extends SoraError {
+export class ToolError extends IxiaError {
   readonly toolName?: string;
   readonly toolCallId?: string;
   override readonly cause?: unknown;

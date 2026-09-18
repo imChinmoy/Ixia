@@ -1,4 +1,4 @@
-import type { Tool, ToolExecutionContext, ToolSchema } from '@sora/tools';
+import type { Tool, ToolExecutionContext, ToolSchema } from '@ixia/tools';
 import type { ShellService } from '../services/shell.service.js';
 import type { ExecuteCommandInput, ShellExecutionResult } from '../types/shell.js';
 

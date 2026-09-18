@@ -1,4 +1,4 @@
-import { ToolError, type ToolErrorOptions } from '@sora/tools';
+import { ToolError, type ToolErrorOptions } from '@ixia/tools';
 
 export class ShellError extends ToolError {
   constructor(message: string, code = 'SHELL_ERROR', options?: ToolErrorOptions) {

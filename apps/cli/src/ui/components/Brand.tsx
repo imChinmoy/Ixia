@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { DEFAULT_VERSION } from '@sora/core';
+import { DEFAULT_VERSION } from '@ixia/core';
 import { theme } from '../theme/theme.js';
 
 export interface BrandProps {
@@ -32,7 +32,7 @@ export const Brand: React.FC<BrandProps> = ({ version = DEFAULT_VERSION, compact
       <Box flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
         <Box flexDirection="row" alignItems="center">
           <Text bold color={theme.primary}>
-            ✦ SORA
+            ✦ IXIA
           </Text>
           <Text color={theme.muted}>  AI CODING ASSISTANT</Text>
         </Box>

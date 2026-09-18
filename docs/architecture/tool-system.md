@@ -1,6 +1,6 @@
 # Tool System Architecture
 
-The **Tool System** provides a generic, provider-independent infrastructure for declaring, registering, discovering, validating, and executing tools in Sora.
+The **Tool System** provides a generic, provider-independent infrastructure for declaring, registering, discovering, validating, and executing tools in Ixia.
 
 It serves as the bridge between model-generated tool calls and real-world actions (filesystem, terminal commands, code search, Git operations), while maintaining strict decoupling from specific LLM providers (e.g. Groq, Anthropic, OpenAI) and user interfaces.
 
@@ -14,7 +14,7 @@ It serves as the bridge between model-generated tool calls and real-world action
                   LLM Provider
                        │
                        ▼
-              Sora Tool Call Model
+              Ixia Tool Call Model
                        │
                        ▼
                   Tool System
@@ -44,13 +44,13 @@ However, naive tool implementations introduce severe architectural pitfalls:
 - Directly executing tools from within LLM streaming callbacks without argument validation or error boundaries.
 - Entangling autonomous decision loops before the foundational execution primitives are solid.
 
-The Tool System in Sora solves this by establishing a **clear, isolated abstraction layer** where tools are pure TypeScript classes that declare a JSON Schema-compatible input specification and an async execution method.
+The Tool System in Ixia solves this by establishing a **clear, isolated abstraction layer** where tools are pure TypeScript classes that declare a JSON Schema-compatible input specification and an async execution method.
 
 ---
 
-## 2. Tool Abstraction (`@sora/tools`)
+## 2. Tool Abstraction (`@ixia/tools`)
 
-A tool in Sora implements the `Tool<TInput, TResult>` interface:
+A tool in Ixia implements the `Tool<TInput, TResult>` interface:
 
 ```typescript
 export interface Tool<TInput = unknown, TResult = unknown> {
@@ -207,12 +207,12 @@ The result explicitly distinguishes between:
 
 ## 7. Structured Error Architecture
 
-All tool errors integrate into Sora's core error hierarchy by extending `SoraError`:
+All tool errors integrate into Ixia's core error hierarchy by extending `IxiaError`:
 
 ```text
-SoraError (@sora/core)
+IxiaError (@ixia/core)
    │
-   └── ToolError (@sora/tools)
+   └── ToolError (@ixia/tools)
          ├── ToolNotFoundError
          ├── ToolValidationError
          ├── ToolExecutionError
@@ -235,18 +235,18 @@ Every `ToolError` encapsulates:
 The dependency direction strictly enforces dependency inversion:
 
 ```text
-Tool System (@sora/tools)
+Tool System (@ixia/tools)
        ▲
        │
-LLM Provider Adapter (@sora/llm / GroqProvider)
+LLM Provider Adapter (@ixia/llm / GroqProvider)
 ```
 
 The Tool System **never** imports `groq-sdk` or provider implementations.
 
-Instead, the provider layer (`@sora/llm`) translates between Sora's neutral representations and provider APIs:
+Instead, the provider layer (`@ixia/llm`) translates between Ixia's neutral representations and provider APIs:
 
 - `toGroqTools(tools?: readonly ToolDefinition[])`: Maps generic `ToolDefinition[]` to `Groq.Chat.ChatCompletionTool[]`.
-- `toSoraToolCall(accumulated)`: Reassembles streaming `delta.tool_calls` chunks from the provider into a generic Sora `ToolCall`.
+- `toIxiaToolCall(accumulated)`: Reassembles streaming `delta.tool_calls` chunks from the provider into a generic Ixia `ToolCall`.
 
 The LLM provider event stream emits:
 
@@ -261,7 +261,7 @@ The LLM provider event stream emits:
 
 ## 9. Built-in Test Tool (`EchoTool`)
 
-To verify the complete lifecycle without external side-effects, Sora includes `EchoTool`:
+To verify the complete lifecycle without external side-effects, Ixia includes `EchoTool`:
 
 ```typescript
 export class EchoTool implements Tool<EchoInput, string> {

@@ -1,4 +1,4 @@
-import { DEFAULT_VERSION } from '@sora/core';
+import { DEFAULT_VERSION } from '@ixia/core';
 
 export function getVersion(): string {
   return DEFAULT_VERSION;

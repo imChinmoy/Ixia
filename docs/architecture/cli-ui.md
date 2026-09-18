@@ -1,13 +1,13 @@
 # CLI UI Architecture & Design System
 
-The **Terminal User Interface (UI)** layer for Sora (`@sora/cli`) provides a dark, minimal, developer-focused terminal interface inspired by modern AI coding agents.
+The **Terminal User Interface (UI)** layer for Ixia (`@ixia/cli`) provides a dark, minimal, developer-focused terminal interface inspired by modern AI coding agents.
 
 ```text
                      apps/cli/src/ui/
                      ├── components/
                      │   ├── App.tsx             (App root wrapper)
                      │   ├── Header.tsx          (Minimal top header)
-                     │   ├── Brand.tsx           (SORA wordmark & tagline)
+                     │   ├── Brand.tsx           (IXIA wordmark & tagline)
                      │   ├── Welcome.tsx         (Welcome message)
                      │   ├── QuickCommands.tsx   (Commands table)
                      │   ├── Capabilities.tsx    (Implemented capabilities)
@@ -40,7 +40,7 @@ The **Terminal User Interface (UI)** layer for Sora (`@sora/cli`) provides a dar
 
 * **Minimal & Dark**: Near-black / charcoal aesthetic with soft white text, subtle slate borders, and zero gaudy gradients.
 * **Developer-Focused**: Monospace typography, code block syntax highlighting, and clean negative space.
-* **Sora Visual Identity**: Recognizable `✦ S O R A` brand identity with an indigo (`#6366F1`) and cyan (`#38BDF8`) accent feel.
+* **Ixia Visual Identity**: Recognizable `✦ S O R A` brand identity with an indigo (`#6366F1`) and cyan (`#38BDF8`) accent feel.
 * **Non-intrusive**: Subtle thinking indicator, rounded unobtrusive borders, and quiet status hints.
 * **Responsive & Resilient**: Dynamic adaptation to narrow (60–80 cols), standard (100–120 cols), and wide (160+ cols) terminal sizes, with height-aware element folding.
 
@@ -81,8 +81,8 @@ The interface reacts dynamically to terminal window resizing:
 
 ### A. Fresh Session (Empty State)
 When `messages.length === 0`:
-1. **Header**: Centered `sora — AI Coding Assistant`
-2. **Brand**: High-impact, weighted pixel-art wordmark (`SORA`), subtitle `AI CODING ASSISTANT`, tagline `Think. Build. Together.`, and version `v0.2.0`.
+1. **Header**: Centered `ixia — AI Coding Assistant`
+2. **Brand**: High-impact, weighted pixel-art wordmark (`IXIA`), subtitle `AI CODING ASSISTANT`, tagline `Think. Build. Together.`, and version `v0.2.0`.
 3. **Divider**: Subtle horizontal divider.
 4. **Welcome**: Warm onboarding prompt.
 5. **Quick Commands & Capabilities**: Side-by-side or stacked reference panels showing actual implemented capabilities (`Conversational AI`, `Filesystem Intelligence`, `Shell Execution`, `Developer Focused`).
@@ -92,11 +92,11 @@ When `messages.length === 0`:
 ### B. Active Conversation State
 When `messages.length > 0`:
 1. The extensive welcome panels transition out cleanly.
-2. A compact brand header (`✦ SORA  AI CODING ASSISTANT  v0.2.0`) stays pinned at the top.
+2. A compact brand header (`✦ IXIA  AI CODING ASSISTANT  v0.2.0`) stays pinned at the top.
 3. The conversation history occupies the central view:
    * **User Prompts**: Prefixed by cyan `›` with soft white text.
-   * **Assistant Responses**: Prefixed by `✦ Sora`, rendered with syntax-highlighted code blocks, lists, and headings.
-4. If a response is generating, a subtle indicator (`✦ Sora  ⠋ thinking...`) pulses.
+   * **Assistant Responses**: Prefixed by `✦ Ixia`, rendered with syntax-highlighted code blocks, lists, and headings.
+4. If a response is generating, a subtle indicator (`✦ Ixia  ⠋ thinking...`) pulses.
 5. Running `/clear` or `/new` resets the message array, instantly returning the interface to the clean welcome dashboard.
 
 ---

@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import { logger } from '@sora/logger';
+import { logger } from '@ixia/logger';
 import type { Message } from '../types/message.js';
 import type { LLMEvent } from '../types/events.js';
 import type { LLMProvider, LLMRequestOptions } from '../provider.js';
@@ -11,7 +11,7 @@ import {
   LLMError,
 } from '../errors.js';
 import { createGroqClient } from './groq.client.js';
-import { toGroqTools, toSoraToolCall, toGroqMessages } from './groq.adapter.js';
+import { toGroqTools, toIxiaToolCall, toGroqMessages } from './groq.adapter.js';
 
 export interface GroqProviderOptions {
   apiKey?: string;
@@ -114,7 +114,7 @@ export class GroqProvider implements LLMProvider {
       }
 
       for (const accumulated of toolCallsByIndex.values()) {
-        const toolCall = toSoraToolCall(accumulated);
+        const toolCall = toIxiaToolCall(accumulated);
         logger.debug(`Tool call received: ${toolCall.name} (${toolCall.id})`);
         yield {
           type: 'tool_call',

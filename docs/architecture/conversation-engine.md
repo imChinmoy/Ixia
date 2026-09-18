@@ -1,15 +1,15 @@
 # Conversation Engine Architecture
 
-The Conversation Engine sits between the Sora user interface (CLI / Ink terminal UI) and LLM providers. It serves as a provider-independent session manager responsible for managing message history, streaming lifecycle events, managing conversation state, and guarding against concurrent execution.
+The Conversation Engine sits between the Ixia user interface (CLI / Ink terminal UI) and LLM providers. It serves as a provider-independent session manager responsible for managing message history, streaming lifecycle events, managing conversation state, and guarding against concurrent execution.
 
 ```text
 User / Terminal UI
         │
         ▼
-   Sora CLI Layer (Interactive / One-shot)
+   Ixia CLI Layer (Interactive / One-shot)
         │
         ▼
-Conversation Engine (@sora/core)
+Conversation Engine (@ixia/core)
    - Message Model & Factories
    - In-memory ConversationState
    - Streaming Event Accumulator
@@ -19,7 +19,7 @@ Conversation Engine (@sora/core)
 Provider Abstraction (LLMProvider interface)
         │
         ▼
-Provider Implementation (@sora/llm / GroqProvider)
+Provider Implementation (@ixia/llm / GroqProvider)
         │
         ▼
 LLM Inference API (Groq API / Other LLMs)
@@ -29,7 +29,7 @@ LLM Inference API (Groq API / Other LLMs)
 
 ## 1. Provider Independence
 
-The Conversation Engine resides in `@sora/core` and has zero dependencies on any specific LLM provider or vendor SDK (e.g. `groq-sdk`). It interacts exclusively through the `LLMProvider` contract:
+The Conversation Engine resides in `@ixia/core` and has zero dependencies on any specific LLM provider or vendor SDK (e.g. `groq-sdk`). It interacts exclusively through the `LLMProvider` contract:
 
 ```typescript
 export interface LLMProvider {
@@ -121,7 +121,7 @@ To prevent interleaved requests or corrupted multi-turn states:
 
 ## 6. System Message Management
 
-- The system prompt defines Sora's persona and constraints (`DEFAULT_SYSTEM_PROMPT`).
+- The system prompt defines Ixia's persona and constraints (`DEFAULT_SYSTEM_PROMPT`).
 - The system prompt is **never added** to the public conversation history (`getMessages()`).
 - During generation, the system message is prepended to the provider payload: `[systemMessage, ...history]`.
 - Custom system prompts can be set via `setSystemPrompt(prompt)`.

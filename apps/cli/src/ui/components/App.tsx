@@ -2,8 +2,8 @@ import React from 'react';
 import process from 'node:process';
 import { Box } from 'ink';
 import { InteractiveScreen } from '../screens/InteractiveScreen.js';
-import type { ConversationManager } from '@sora/core';
-import type { AgentRuntime } from '@sora/agent';
+import type { ConversationManager } from '@ixia/core';
+import type { AgentRuntime } from '@ixia/agent';
 
 import type { ToolItem } from './ToolsPanel.js';
 

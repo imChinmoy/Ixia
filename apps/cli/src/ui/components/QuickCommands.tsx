@@ -13,7 +13,7 @@ export const QUICK_COMMANDS = [
   { cmd: '/clear', desc: 'Clear the conversation' },
   { cmd: '/new', desc: 'Start a new session' },
   { cmd: '/config', desc: 'Show configuration' },
-  { cmd: '/exit', desc: 'Exit Sora' },
+  { cmd: '/exit', desc: 'Exit Ixia' },
 ];
 
 export const QuickCommands: React.FC<QuickCommandsProps> = ({ width }) => {

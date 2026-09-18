@@ -8,14 +8,14 @@ import {
   type LLMEvent,
   type LLMRequestOptions,
   type Message,
-} from '@sora/core';
-import { ToolRegistry, ToolExecutor } from '@sora/tools';
-import { AgentRuntime, type AgentEvent } from '@sora/agent';
+} from '@ixia/core';
+import { ToolRegistry, ToolExecutor } from '@ixia/tools';
+import { AgentRuntime, type AgentEvent } from '@ixia/agent';
 import {
   RepositoryContextBuilder,
   ContextCache,
   BudgetEnforcer,
-} from '@sora/context';
+} from '@ixia/context';
 
 class MockLLMProvider implements LLMProvider {
   readonly name = 'mock-llm';
@@ -120,7 +120,7 @@ describe('Context Builder & Agent Integration (Phase 8)', () => {
     let tempDir: string;
 
     beforeEach(async () => {
-      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-builder-test-'));
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-builder-test-'));
       await fs.mkdir(path.join(tempDir, 'src', 'auth'), { recursive: true });
       await fs.mkdir(path.join(tempDir, 'packages', 'web'), { recursive: true });
 
@@ -193,7 +193,7 @@ describe('Context Builder & Agent Integration (Phase 8)', () => {
     let toolExecutor: ToolExecutor;
 
     beforeEach(async () => {
-      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'sora-agent-ctx-test-'));
+      tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ixia-agent-ctx-test-'));
       await fs.mkdir(path.join(tempDir, 'src'), { recursive: true });
       await fs.writeFile(path.join(tempDir, 'package.json'), '{"name": "test-agent-ctx"}');
       await fs.writeFile(path.join(tempDir, 'src', 'main.ts'), 'console.log("hello");');
@@ -201,7 +201,7 @@ describe('Context Builder & Agent Integration (Phase 8)', () => {
       mockProvider = new MockLLMProvider();
       conversationManager = new ConversationManager({
         provider: mockProvider,
-        systemPrompt: 'You are Sora.',
+        systemPrompt: 'You are Ixia.',
       });
       toolRegistry = new ToolRegistry();
       toolExecutor = new ToolExecutor(toolRegistry);
@@ -239,7 +239,7 @@ describe('Context Builder & Agent Integration (Phase 8)', () => {
       expect(mockProvider.calls.length).toBeGreaterThan(0);
       const systemMessage = mockProvider.calls[0]!.messages.find((m) => m.role === 'system');
       expect(systemMessage).toBeDefined();
-      expect(systemMessage!.content).toContain('You are Sora.');
+      expect(systemMessage!.content).toContain('You are Ixia.');
       expect(systemMessage!.content).toContain('[Repository Context]');
       expect(systemMessage!.content).toContain('Project: Node.js');
     });
@@ -274,7 +274,7 @@ describe('Context Builder & Agent Integration (Phase 8)', () => {
       // Loop still ran and completed normally
       expect(mockProvider.calls.length).toBe(1);
       const systemMessage = mockProvider.calls[0]!.messages.find((m) => m.role === 'system');
-      expect(systemMessage!.content).toBe('You are Sora.');
+      expect(systemMessage!.content).toBe('You are Ixia.');
     });
   });
 });

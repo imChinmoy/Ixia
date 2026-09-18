@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto';
 import process from 'node:process';
-import type { ConversationManager } from '@sora/core';
-import type { ToolRegistry, ToolExecutor } from '@sora/tools';
-import type { RepositoryContextBuilder, RepositoryContextSnapshot } from '@sora/context';
-import type { PlannerService, PlanState, Plan } from '@sora/planner';
-import { logger } from '@sora/logger';
+import type { ConversationManager } from '@ixia/core';
+import type { ToolRegistry, ToolExecutor } from '@ixia/tools';
+import type { RepositoryContextBuilder, RepositoryContextSnapshot } from '@ixia/context';
+import type { PlannerService, PlanState, Plan } from '@ixia/planner';
+import { logger } from '@ixia/logger';
 import type {
   AgentConfig,
   AgentEvent,

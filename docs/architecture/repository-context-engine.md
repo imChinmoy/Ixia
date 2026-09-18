@@ -1,8 +1,8 @@
 # Repository Context Engine Architecture
 
-The **Repository Context Engine** (`@sora/context`) provides Sora with an offline, deterministic, and bounded orientation snapshot of the workspace before the agent begins executing multi-turn tool loops.
+The **Repository Context Engine** (`@ixia/context`) provides Ixia with an offline, deterministic, and bounded orientation snapshot of the workspace before the agent begins executing multi-turn tool loops.
 
-Prior to Phase 8, Sora started each task without any structural awareness of the repository, requiring exploratory tool calls (`list_directory`, `search_files`) to determine basic properties such as project type, languages, package manager, and layout. The Repository Context Engine automatically analyzes the workspace in milliseconds, generating a compact context block that is injected into the system prompt.
+Prior to Phase 8, Ixia started each task without any structural awareness of the repository, requiring exploratory tool calls (`list_directory`, `search_files`) to determine basic properties such as project type, languages, package manager, and layout. The Repository Context Engine automatically analyzes the workspace in milliseconds, generating a compact context block that is injected into the system prompt.
 
 ```text
                                ┌──────────────────┐
@@ -91,7 +91,7 @@ Prior to Phase 8, Sora started each task without any structural awareness of the
 
 ### 2.1 Workspace Discovery & Ignore Rules
 
-- **`FileDiscovery`**: Bounded recursive traversal using `@sora/filesystem`'s `PathService` to validate workspace boundaries and protect against symlink traversal attacks.
+- **`FileDiscovery`**: Bounded recursive traversal using `@ixia/filesystem`'s `PathService` to validate workspace boundaries and protect against symlink traversal attacks.
 - **`IgnoreManager`**: Enforces default ignore directories (`node_modules`, `.git`, `dist`, `build`, `coverage`, `.next`, `target`, `.cache`, `.turbo`, etc.) and parses workspace `.gitignore` files supporting:
   - Wildcard globs (`*.log`, `*.tmp`)
   - Directory-only patterns (`temp/`)
@@ -189,7 +189,7 @@ Likely Relevant Candidate Files:
 - packages/agent/src/runtime/agent.runtime.ts
 
 Project Overview (from README):
-Sora is an AI-powered developer coding CLI...
+Ixia is an AI-powered developer coding CLI...
 
 Notice: The above candidate files and structure are for orientation. Always use tools (read_file, search_files) to inspect and verify actual code before answering.
 ```

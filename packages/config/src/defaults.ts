@@ -1,9 +1,9 @@
-import { DEFAULT_VERSION } from '@sora/core';
-import type { SoraConfig } from './config.js';
+import { DEFAULT_VERSION } from '@ixia/core';
+import type { IxiaConfig } from './config.js';
 
 export const DEFAULT_LLM_MODEL = 'openai/gpt-oss-120b';
 
-export const DEFAULT_CONFIG: SoraConfig = {
+export const DEFAULT_CONFIG: IxiaConfig = {
   version: DEFAULT_VERSION,
   theme: 'default',
   llm: {

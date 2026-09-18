@@ -1,7 +1,7 @@
 import React from 'react';
 import process from 'node:process';
 import { Box, Text } from 'ink';
-import { formatPath } from '@sora/shared';
+import { formatPath } from '@ixia/shared';
 
 export interface SessionInfoProps {
   cwd?: string;

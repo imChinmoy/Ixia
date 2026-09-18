@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import type { Plan } from '@sora/planner';
+import type { Plan } from '@ixia/planner';
 import { theme } from '../theme/theme.js';
 
 export interface PlanViewProps {

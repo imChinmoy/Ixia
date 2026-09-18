@@ -15,7 +15,7 @@ describe('Slash Commands', () => {
     expect(result).not.toBeNull();
     expect(result?.type).toBe('help');
     if (result && result.type === 'help') {
-      expect(result.message).toContain('Sora Commands');
+      expect(result.message).toContain('Ixia Commands');
       expect(result.message).toContain('/help');
       expect(result.message).toContain('/clear');
       expect(result.message).toContain('/status');
@@ -45,7 +45,7 @@ describe('Slash Commands', () => {
     expect(result).not.toBeNull();
     expect(result?.type).toBe('status');
     if (result && result.type === 'status') {
-      expect(result.message).toContain('Sora Status');
+      expect(result.message).toContain('Ixia Status');
       expect(result.message).toContain('0.2.0');
       expect(result.message).toContain('Groq');
       expect(result.message).toContain('openai/gpt-oss-120b');
@@ -130,7 +130,7 @@ describe('Slash Commands', () => {
     expect(result).not.toBeNull();
     expect(result?.type).toBe('config');
     if (result && result.type === 'config') {
-      expect(result.message).toContain('Sora Configuration');
+      expect(result.message).toContain('Ixia Configuration');
       expect(result.message).toContain('Groq');
       expect(result.message).toContain('openai/gpt-oss-120b');
     }

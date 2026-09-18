@@ -2,9 +2,9 @@ import {
   type ToolCall,
   type Message,
   createToolResultMessage,
-} from '@sora/core';
-import type { ToolExecutor, ToolExecutionContext } from '@sora/tools';
-import { logger } from '@sora/logger';
+} from '@ixia/core';
+import type { ToolExecutor, ToolExecutionContext } from '@ixia/tools';
+import { logger } from '@ixia/logger';
 
 export interface ToolCallExecution {
   toolCall: ToolCall;

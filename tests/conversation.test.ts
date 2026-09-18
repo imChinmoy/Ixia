@@ -8,7 +8,7 @@ import {
   type LLMEvent,
   type Message,
   type ConversationEvent,
-} from '@sora/core';
+} from '@ixia/core';
 
 class MockLLMProvider implements LLMProvider {
   readonly name = 'mock';
@@ -51,7 +51,7 @@ describe('ConversationManager (Phase 3)', () => {
       messages: [],
       status: 'idle',
     });
-    expect(manager.getSystemPrompt()).toContain('You are Sora');
+    expect(manager.getSystemPrompt()).toContain('You are Ixia');
     expect(manager.getProvider()).toBe(mockProvider);
   });
 
