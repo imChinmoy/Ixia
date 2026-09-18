@@ -4,6 +4,8 @@ import {
   createUserMessage,
   createAssistantMessage,
   createSystemMessage,
+  createAssistantToolCallMessage,
+  createToolResultMessage,
 } from '@sora/core';
 
 describe('Message Model & Factories', () => {
@@ -67,4 +69,34 @@ describe('Message Model & Factories', () => {
     expect(msg.id).toBeDefined();
     expect(msg.createdAt).toBeInstanceOf(Date);
   });
+
+  it('should create assistant tool call message with createAssistantToolCallMessage', () => {
+    const toolCalls = [
+      {
+        id: 'call_123',
+        name: 'list_directory',
+        arguments: { path: '.' },
+      },
+    ];
+    const msg = createAssistantToolCallMessage(toolCalls);
+
+    expect(msg.role).toBe('assistant');
+    expect(msg.content).toBe('');
+    expect(msg.toolCalls).toEqual(toolCalls);
+    expect(msg.id).toBeDefined();
+    expect(msg.createdAt).toBeInstanceOf(Date);
+  });
+
+  it('should create tool result message with createToolResultMessage', () => {
+    const content = JSON.stringify({ files: ['package.json'] });
+    const msg = createToolResultMessage('call_123', 'list_directory', content);
+
+    expect(msg.role).toBe('tool');
+    expect(msg.content).toBe(content);
+    expect(msg.toolCallId).toBe('call_123');
+    expect(msg.toolName).toBe('list_directory');
+    expect(msg.id).toBeDefined();
+    expect(msg.createdAt).toBeInstanceOf(Date);
+  });
 });
+

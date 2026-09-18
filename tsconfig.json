@@ -12,6 +12,7 @@
     { "path": "./packages/filesystem" },
     { "path": "./packages/shell" },
     { "path": "./packages/llm" },
+    { "path": "./packages/agent" },
     { "path": "./apps/cli" }
   ],
   "files": [],

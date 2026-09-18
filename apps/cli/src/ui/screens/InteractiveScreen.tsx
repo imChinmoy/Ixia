@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import process from 'node:process';
-import { Box, useApp } from 'ink';
+import { Box, useApp, useInput } from 'ink';
 import { Header } from '../components/Header.js';
 import { Brand } from '../components/Brand.js';
 import { Welcome } from '../components/Welcome.js';
@@ -14,6 +14,7 @@ import { Spinner } from '../components/Spinner.js';
 import { isSlashCommand, handleSlashCommand } from '../slash.js';
 import { useTerminalLayout } from '../layout/terminal-layout.js';
 import type { ToolItem } from '../components/ToolsPanel.js';
+import type { AgentRuntime } from '@sora/agent';
 import {
   EXIT_COMMANDS,
   DEFAULT_VERSION,
@@ -28,6 +29,7 @@ export interface InteractiveScreenProps {
   model?: string;
   version?: string;
   conversationManager?: ConversationManager;
+  agentRuntime?: AgentRuntime;
   tools?: ToolItem[];
   onExit?: () => void;
 }
@@ -38,6 +40,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
   model = 'openai/gpt-oss-120b',
   version = DEFAULT_VERSION,
   conversationManager,
+  agentRuntime,
   tools,
   onExit,
 }) => {
@@ -59,6 +62,24 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
       return () => clearTimeout(timer);
     }
   }, [uiState, exit, onExit]);
+
+  // Intercept Ctrl+C to cancel running agent or exit if idle
+  useInput((char, key) => {
+    if (key.ctrl && char === 'c') {
+      if (
+        agentRuntime &&
+        (agentRuntime.getState() === 'running' ||
+          agentRuntime.getState() === 'waiting_for_tool')
+      ) {
+        agentRuntime.cancel('Interrupted by user (Ctrl+C)');
+        setIsThinking(false);
+        setActiveStreamingId(null);
+        setUiState('input');
+        return;
+      }
+      setUiState('exiting');
+    }
+  });
 
   const handleSubmit = async (input: string): Promise<void> => {
     const timestamp = Date.now();
@@ -154,12 +175,16 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
       }
     }
 
-    // 3. Normal conversation turn for the LLM
-    if (conversationManager && conversationManager.getStatus() === 'generating') {
+    // 3. Normal conversation turn
+    const isBusy = agentRuntime
+      ? agentRuntime.getState() === 'running' || agentRuntime.getState() === 'waiting_for_tool'
+      : conversationManager && conversationManager.getStatus() === 'generating';
+
+    if (isBusy) {
       const busyWarning: MessageItem = {
         id: `msg-busy-${timestamp}-${randomSuffix}`,
         type: 'error',
-        content: 'A request is already in progress. Please wait until generation finishes.',
+        content: 'A request is already in progress. Please wait or press Ctrl+C to cancel.',
         timestamp,
       };
       setMessages((prev) => [...prev, busyWarning]);
@@ -175,8 +200,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
 
     setMessages((prev) => [...prev, userMessage]);
 
-    if (!conversationManager) {
-      // Fallback echo if conversationManager is not provided
+    if (!agentRuntime && !conversationManager) {
       const echoMessage: MessageItem = {
         id: `msg-sys-${timestamp}-${randomSuffix}`,
         type: 'system',
@@ -193,8 +217,151 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
     const assistantMsgId = `msg-assistant-${timestamp}-${randomSuffix}`;
     let createdAssistantMessage = false;
 
+    // Use AgentRuntime if provided (Phase 7 Agent Loop)
+    if (agentRuntime) {
+      try {
+        for await (const event of agentRuntime.runStream(input)) {
+          if (event.type === 'iteration_started' || event.type === 'llm_started') {
+            setIsThinking(true);
+          } else if (event.type === 'llm_text_delta') {
+            if (!createdAssistantMessage) {
+              setIsThinking(false);
+              createdAssistantMessage = true;
+              setActiveStreamingId(assistantMsgId);
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: assistantMsgId,
+                  type: 'assistant',
+                  content: event.content,
+                  timestamp: Date.now(),
+                },
+              ]);
+            } else {
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === assistantMsgId
+                    ? { ...msg, content: msg.content + event.content }
+                    : msg,
+                ),
+              );
+            }
+          } else if (event.type === 'tool_call_started') {
+            setIsThinking(false);
+            createdAssistantMessage = false;
+            setActiveStreamingId(null);
+
+            const argsStr =
+              Object.keys(event.toolCall.arguments).length > 0
+                ? JSON.stringify(event.toolCall.arguments)
+                : '';
+
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `tool-${event.toolCall.id}`,
+                type: 'tool',
+                content: `${event.toolCall.name} ${argsStr}`.trim(),
+                timestamp: Date.now(),
+                toolCallId: event.toolCall.id,
+                toolName: event.toolCall.name,
+                toolStatus: 'running',
+              },
+            ]);
+          } else if (event.type === 'tool_call_completed') {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === `tool-${event.toolCall.id}`
+                  ? { ...msg, toolStatus: 'success' }
+                  : msg,
+              ),
+            );
+            setIsThinking(true);
+          } else if (event.type === 'tool_call_failed') {
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === `tool-${event.toolCall.id}`
+                  ? {
+                      ...msg,
+                      toolStatus: 'failed',
+                      content: `${msg.content} (${event.error.message})`,
+                    }
+                  : msg,
+              ),
+            );
+            setIsThinking(true);
+          } else if (event.type === 'agent_completed') {
+            setIsThinking(false);
+            setActiveStreamingId(null);
+            if (event.output) {
+              setMessages((prev) => {
+                const exists = prev.some((m) => m.id === assistantMsgId);
+                if (exists) {
+                  return prev.map((m) =>
+                    m.id === assistantMsgId ? { ...m, content: event.output } : m,
+                  );
+                }
+                return [
+                  ...prev,
+                  {
+                    id: assistantMsgId,
+                    type: 'assistant',
+                    content: event.output,
+                    timestamp: Date.now(),
+                  },
+                ];
+              });
+            }
+          } else if (event.type === 'agent_error') {
+            setIsThinking(false);
+            setActiveStreamingId(null);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `msg-err-${Date.now()}`,
+                type: 'error',
+                content: event.error.message,
+                timestamp: Date.now(),
+              },
+            ]);
+          } else if (event.type === 'agent_cancelled') {
+            setIsThinking(false);
+            setActiveStreamingId(null);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `msg-cancelled-${Date.now()}`,
+                type: 'info',
+                content: '[Operation cancelled by user]',
+                timestamp: Date.now(),
+              },
+            ]);
+          }
+        }
+      } catch (error) {
+        setIsThinking(false);
+        setActiveStreamingId(null);
+        const message = error instanceof Error ? error.message : String(error);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `msg-err-${Date.now()}`,
+            type: 'error',
+            content: message,
+            timestamp: Date.now(),
+          },
+        ]);
+      } finally {
+        setIsThinking(false);
+        setActiveStreamingId(null);
+        setUiState('input');
+      }
+      return;
+    }
+
+    // Fallback if only conversationManager is provided
     try {
-      for await (const event of conversationManager.sendMessage(input)) {
+      for await (const event of conversationManager!.sendMessage(input)) {
         if (event.type === 'generation_started') {
           setIsThinking(true);
         } else if (event.type === 'assistant_text_delta') {

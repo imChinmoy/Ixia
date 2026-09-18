@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createProgram } from '../apps/cli/src/cli.js';
 import { startCommand } from '../apps/cli/src/commands/start.command.js';
 import * as llmModule from '@sora/llm';
+import { AgentRuntime } from '@sora/agent';
 
 describe('CLI Commander Program', () => {
   const originalEnv = { ...process.env };
@@ -42,7 +43,20 @@ describe('CLI Commander Program', () => {
   it('should execute one-shot mode and stream output when prompt is provided', async () => {
     process.env['GROQ_PROVIDER_KEY'] = 'test-key';
 
-    // Mock ConversationManager sendMessage generator
+    // Mock AgentRuntime runStream generator
+    vi.spyOn(AgentRuntime.prototype, 'runStream').mockImplementation(
+      async function* () {
+        yield { type: 'llm_text_delta', content: 'Streamed response chunk', iteration: 1 };
+        yield {
+          type: 'agent_completed',
+          output: 'Streamed response chunk',
+          totalIterations: 1,
+          totalToolCalls: 0,
+        };
+      },
+    );
+
+    // Mock ConversationManager sendMessage generator for fallback compatibility
     vi.spyOn(llmModule.ConversationManager.prototype, 'sendMessage').mockImplementation(
       async function* () {
         yield { type: 'text_delta', content: 'Streamed response chunk' };

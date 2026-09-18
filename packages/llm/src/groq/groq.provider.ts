@@ -11,7 +11,7 @@ import {
   LLMError,
 } from '../errors.js';
 import { createGroqClient } from './groq.client.js';
-import { toGroqTools, toSoraToolCall } from './groq.adapter.js';
+import { toGroqTools, toSoraToolCall, toGroqMessages } from './groq.adapter.js';
 
 export interface GroqProviderOptions {
   apiKey?: string;
@@ -41,10 +41,8 @@ export class GroqProvider implements LLMProvider {
     logger.debug(`Model: ${this.model}`);
     logger.debug('Request started');
 
-    const groqMessages: Groq.Chat.ChatCompletionMessageParam[] = messages.map((m) => ({
-      role: m.role,
-      content: m.content,
-    }));
+    const groqMessages = toGroqMessages(messages);
+
 
     const groqTools = toGroqTools(options?.tools);
 

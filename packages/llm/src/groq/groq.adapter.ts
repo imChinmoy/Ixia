@@ -1,5 +1,6 @@
 import type Groq from 'groq-sdk';
-import type { ToolDefinition, ToolCall } from '@sora/core';
+import type { ToolDefinition, ToolCall, Message } from '@sora/core';
+
 
 /**
  * Converts generic Sora ToolDefinition array to Groq ChatCompletionTool array.
@@ -57,3 +58,58 @@ export function toSoraToolCall(accumulated: {
     arguments: parsedArgs,
   };
 }
+
+/**
+ * Converts generic Sora Message array to Groq ChatCompletionMessageParam array,
+ * preserving tool calls and tool execution responses.
+ */
+export function toGroqMessages(
+  messages: readonly Message[],
+): Groq.Chat.ChatCompletionMessageParam[] {
+  return messages.map((m): Groq.Chat.ChatCompletionMessageParam => {
+    if (m.role === 'tool') {
+      return {
+        role: 'tool',
+        tool_call_id: m.toolCallId ?? '',
+        content: m.content,
+      };
+    }
+
+    if (m.role === 'assistant') {
+      if (m.toolCalls && m.toolCalls.length > 0) {
+        return {
+          role: 'assistant',
+          content: m.content || null,
+          tool_calls: m.toolCalls.map((tc) => ({
+            id: tc.id,
+            type: 'function' as const,
+            function: {
+              name: tc.name,
+              arguments:
+                typeof tc.arguments === 'string'
+                  ? tc.arguments
+                  : JSON.stringify(tc.arguments ?? {}),
+            },
+          })),
+        };
+      }
+      return {
+        role: 'assistant',
+        content: m.content,
+      };
+    }
+
+    if (m.role === 'system') {
+      return {
+        role: 'system',
+        content: m.content,
+      };
+    }
+
+    return {
+      role: 'user',
+      content: m.content,
+    };
+  });
+}
+

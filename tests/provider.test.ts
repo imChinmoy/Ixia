@@ -5,9 +5,11 @@ import {
   RateLimitError,
   NetworkError,
   InvalidModelError,
+  toGroqMessages,
   type Message,
 } from '@sora/llm';
 import type Groq from 'groq-sdk';
+
 
 describe('GroqProvider', () => {
   it('should initialize with model and custom client', () => {
@@ -293,4 +295,79 @@ describe('GroqProvider', () => {
       { type: 'completed' },
     ]);
   });
+
+  it('should map various Sora messages to Groq chat completion messages using toGroqMessages', () => {
+    const messages: Message[] = [
+      {
+        id: '1',
+        role: 'system',
+        content: 'System instructions',
+        createdAt: new Date(),
+      },
+      {
+        id: '2',
+        role: 'user',
+        content: 'List files',
+        createdAt: new Date(),
+      },
+      {
+        id: '3',
+        role: 'assistant',
+        content: '',
+        createdAt: new Date(),
+        toolCalls: [
+          {
+            id: 'call_1',
+            name: 'list_directory',
+            arguments: { path: '.' },
+          },
+        ],
+      },
+      {
+        id: '4',
+        role: 'tool',
+        content: '["file1.txt"]',
+        toolCallId: 'call_1',
+        toolName: 'list_directory',
+        createdAt: new Date(),
+      },
+      {
+        id: '5',
+        role: 'assistant',
+        content: 'Here are the files: file1.txt',
+        createdAt: new Date(),
+      },
+    ];
+
+    const groqMsgs = toGroqMessages(messages);
+
+    expect(groqMsgs).toEqual([
+      { role: 'system', content: 'System instructions' },
+      { role: 'user', content: 'List files' },
+      {
+        role: 'assistant',
+        content: null,
+        tool_calls: [
+          {
+            id: 'call_1',
+            type: 'function',
+            function: {
+              name: 'list_directory',
+              arguments: JSON.stringify({ path: '.' }),
+            },
+          },
+        ],
+      },
+      {
+        role: 'tool',
+        tool_call_id: 'call_1',
+        content: '["file1.txt"]',
+      },
+      {
+        role: 'assistant',
+        content: 'Here are the files: file1.txt',
+      },
+    ]);
+  });
 });
+

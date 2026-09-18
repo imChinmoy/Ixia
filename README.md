@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 6 — Terminal / Shell Tool
+Phase 7 — Agent Loop
 
 ### Completed
 
@@ -16,6 +16,7 @@ Phase 6 — Terminal / Shell Tool
 - [x] Phase 4 — Tool System
 - [x] Phase 5 — Filesystem Intelligence
 - [x] Phase 6 — Terminal / Shell Tool
+- [x] Phase 7 — Agent Loop
 
 ---
 
@@ -31,6 +32,17 @@ Phase 6 — Terminal / Shell Tool
 - Provider abstraction
 - Conversation state management
 - Error handling
+
+### Agent Loop & Autonomous Execution
+
+- Multi-turn autonomous tool execution loop
+- Real-time asynchronous lifecycle event streaming
+- Single-turn parallel tool execution
+- Tool failure recovery (tool errors fed back as structured context)
+- Safety limits (`maxIterations` and `maxToolCalls`)
+- Responsive execution cancellation via `AbortSignal` (Ctrl+C in terminal)
+- Concurrency lock protecting against overlapping runs
+- Provider-agnostic runtime architecture
 
 ### Tool System
 
@@ -70,7 +82,6 @@ Phase 6 — Terminal / Shell Tool
 - File modification
 - File creation
 - File deletion
-- Autonomous agent loop
 - Planning
 - Repository indexing
 - Semantic code search
@@ -93,31 +104,24 @@ Phase 6 — Terminal / Shell Tool
                      ┌──────▼──────┐
                      │  CLI Layer  │  apps/cli (Commander.js, Ink/React UI)
                      └──────┬──────┘
-                            │  ConversationEvents
+                            │  AgentEvents / AbortSignal
                      ┌──────▼──────┐
-                     │Conversation │  packages/core (ConversationManager, MessageModel,
-                     │   Engine    │  State Machine, Concurrency Lock)
+                     │ AgentRuntime│  packages/agent (State Machine,
+                     │  AgentLoop  │  Concurrency Lock, Limits, Streaming)
                      └──────┬──────┘
-                            │  LLMProvider contract
-                     ┌──────▼──────┐
-                     │LLM Provider │  packages/llm (GroqProvider, Adapter, Error Mapper)
-                     └──────┬──────┘
-                            │  ToolCalls / ToolDefinitions
-                     ┌──────▼──────┐
-                     │ Tool System │  packages/tools (ToolRegistry, ToolExecutor,
-                     │             │  Schema Validator, Structured Errors)
-                     └──────┬──────┘
-                            │  Executes Tools
-              ┌─────────────┴─────────────┐
-              ▼                           ▼
-       ┌──────────────┐            ┌──────────────┐
-       │  Filesystem  │            │  Shell Tool  │  packages/shell
-       │ Intelligence │            │              │  (ShellService, ProcessExecutor,
-       └──────┬───────┘            └──────┬───────┘   execute_command)
-              │  Workspace boundary       │  Workspace bounded spawn
-       ┌──────▼───────┐            ┌──────▼───────┐
-       │   Node fs    │            │ Node Process │  Asynchronous child_process
-       └──────────────┘            └──────────────┘
+                            │
+               ┌────────────┴────────────┐
+               ▼                         ▼
+     ┌──────────────────┐      ┌──────────────────┐
+     │ConversationEngine│      │   Tool System    │  packages/tools
+     │ (packages/core)  │      │(Registry/Executor│
+     └─────────┬────────┘      └─────────┬────────┘
+               │                         │  Executes Tools
+               ▼                   ┌─────┴─────┐
+     ┌──────────────────┐          ▼           ▼
+     │   LLM Provider   │    ┌──────────┐ ┌──────────┐
+     │  (packages/llm)  │    │Filesystem│ │Shell Tool│
+     └──────────────────┘    └──────────┘ └──────────┘
 ```
 
 ---
@@ -201,7 +205,7 @@ pnpm format
 - [x] Phase 4 — Tool System
 - [x] Phase 5 — Filesystem Intelligence
 - [x] Phase 6 — Terminal / Shell Tool
-- [ ] Phase 7 — Agent Loop
+- [x] Phase 7 — Agent Loop
 - [ ] Phase 8 — Repository Context Engine
 - [ ] Phase 9 — Planning System
 - [ ] Phase 10 — Verification & Self-Correction

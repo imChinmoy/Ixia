@@ -64,6 +64,26 @@ export const Conversation: React.FC<ConversationProps> = ({
           );
         }
 
+        if (msg.type === 'tool') {
+          const isRunning = msg.toolStatus === 'running';
+          const isFailed = msg.toolStatus === 'failed';
+          const icon = isRunning ? '→' : isFailed ? '✗' : '✓';
+          const iconColor = isRunning
+            ? theme.secondary
+            : isFailed
+              ? theme.error
+              : theme.success;
+
+          return (
+            <Box key={msg.id} marginY={0} paddingLeft={1} flexDirection="row">
+              <Text bold color={iconColor}>
+                {icon}{' '}
+              </Text>
+              <Text color={theme.muted}>{msg.content}</Text>
+            </Box>
+          );
+        }
+
         // System message
         return (
           <Box key={msg.id} marginY={0}>
