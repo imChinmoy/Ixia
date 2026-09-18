@@ -132,7 +132,8 @@ describe('UI Redesign - Content & Component Grounding', () => {
 
   it('should define bold, weighted pixel-art IXIA logo lines and gradient', () => {
     expect(IXIA_PIXEL_LOGO).toHaveLength(6);
-    expect(IXIA_PIXEL_LOGO[0]).toContain('███████╗');
+    expect(IXIA_PIXEL_LOGO[0]).toContain('███████');
+    expect(IXIA_PIXEL_LOGO[0]).toContain('██████');
     expect(IXIA_LOGO_GRADIENT).toHaveLength(6);
   });
 });

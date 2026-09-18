@@ -46,7 +46,7 @@ Set up the repository and development architecture.
 ### Initial Structure
 
 ```text
-sora/
+ixia/
 ├── apps/
 │   └── cli/
 ├── packages/
@@ -64,7 +64,7 @@ sora/
 ### Milestone
 
 ```bash
-sora
+ixia
 ```
 
 successfully launches.
@@ -90,7 +90,7 @@ Build a polished interactive terminal application.
 ### Build
 
 ```bash
-sora
+ixia
 ```
 
 Interactive interface:
@@ -111,10 +111,10 @@ Hello! How can I help?
 Support:
 
 ```bash
-sora
-sora "explain this project"
-sora --help
-sora --version
+ixia
+ixia "explain this project"
+ixia --help
+ixia --version
 ```
 
 ### Milestone
@@ -170,7 +170,7 @@ LLMProvider
 ### Build
 
 ```bash
-sora
+ixia
 ```
 
 Then:
@@ -706,16 +706,16 @@ git_commit()
 Useful commands:
 
 ```bash
-sora review
-sora explain
-sora diff
-sora commit
+ixia review
+ixia explain
+ixia diff
+ixia commit
 ```
 
 Example:
 
 ```text
-> sora review
+> ixia review
 
 Ixia analyzes:
 
@@ -819,7 +819,7 @@ Previous decisions
 Example:
 
 ```text
-.sora/
+.ixia/
 ├── config
 ├── memory
 ├── sessions
@@ -881,7 +881,7 @@ Third-party tools can be plugged into Ixia.
 Allow users to choose their LLM.
 
 ```bash
-sora --model <model>
+ixia --model <model>
 ```
 
 Architecture:
@@ -991,13 +991,13 @@ Releases
 Distribution:
 
 ```bash
-npm install -g sora-cli
+npm install -g ixia-cli
 ```
 
 Eventually:
 
 ```bash
-brew install sora
+brew install ixia
 ```
 
 and binaries for:
@@ -1110,7 +1110,7 @@ The first meaningful target is:
 ```text
 Ixia V0.1
 
-sora "fix this bug"
+ixia "fix this bug"
        ↓
 understand repository
        ↓
