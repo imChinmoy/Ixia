@@ -27,6 +27,20 @@ export class CLIError extends SoraError {
   }
 }
 
+export class ConversationError extends SoraError {
+  constructor(message: string, code = 'CONVERSATION_ERROR') {
+    super(message, code);
+    this.name = 'ConversationError';
+  }
+}
+
+export class ConversationBusyError extends ConversationError {
+  constructor(message = 'A request is already in progress. Please wait until generation finishes.') {
+    super(message, 'CONVERSATION_BUSY');
+    this.name = 'ConversationBusyError';
+  }
+}
+
 export function isSoraError(error: unknown): error is SoraError {
   return error instanceof SoraError;
 }

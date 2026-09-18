@@ -1,6 +1,1 @@
-export type MessageRole = 'system' | 'user' | 'assistant';
-
-export interface Message {
-  role: MessageRole;
-  content: string;
-}
+export type { MessageRole, Message } from '@sora/core';

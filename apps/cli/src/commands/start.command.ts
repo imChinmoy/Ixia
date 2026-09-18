@@ -1,8 +1,8 @@
 import process from 'node:process';
 import chalk from 'chalk';
-import { EXIT_CODES } from '@sora/core';
+import { EXIT_CODES, ConversationManager } from '@sora/core';
 import { loadConfig, validateLLMConfig } from '@sora/config';
-import { GroqProvider, ConversationManager } from '@sora/llm';
+import { GroqProvider } from '@sora/llm';
 import { renderInteractiveUI } from '../ui/index.js';
 import { logger } from '@sora/logger';
 
@@ -29,8 +29,8 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
 
     try {
       for await (const event of conversationManager.sendMessage(prompt)) {
-        if (event.type === 'text_delta') {
-          process.stdout.write(event.content);
+        if (event.type === 'assistant_text_delta' || (event as { type: string }).type === 'text_delta') {
+          process.stdout.write((event as { content: string }).content);
         } else if (event.type === 'error') {
           process.stderr.write(`\n${chalk.red('Error:')} ${event.error.message}\n`);
           process.exit(EXIT_CODES.ERROR);

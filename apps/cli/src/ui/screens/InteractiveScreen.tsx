@@ -8,8 +8,13 @@ import { InputPrompt } from '../components/InputPrompt.js';
 import { StatusBar } from '../components/StatusBar.js';
 import { Spinner } from '../components/Spinner.js';
 import { isSlashCommand, handleSlashCommand } from '../slash.js';
-import { EXIT_COMMANDS, DEFAULT_VERSION, type UIState, type MessageItem } from '@sora/core';
-import type { ConversationManager } from '@sora/llm';
+import {
+  EXIT_COMMANDS,
+  DEFAULT_VERSION,
+  type UIState,
+  type MessageItem,
+  type ConversationManager,
+} from '@sora/core';
 
 export interface InteractiveScreenProps {
   initialCwd?: string;
@@ -139,6 +144,17 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
     }
 
     // 3. Normal conversation turn for the LLM
+    if (conversationManager && conversationManager.getStatus() === 'generating') {
+      const busyWarning: MessageItem = {
+        id: `msg-busy-${timestamp}-${randomSuffix}`,
+        type: 'error',
+        content: 'A request is already in progress. Please wait until generation finishes.',
+        timestamp,
+      };
+      setMessages((prev) => [...prev, busyWarning]);
+      return;
+    }
+
     const userMessage: MessageItem = {
       id: `msg-user-${timestamp}-${randomSuffix}`,
       type: 'user',
@@ -168,7 +184,9 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
 
     try {
       for await (const event of conversationManager.sendMessage(input)) {
-        if (event.type === 'text_delta') {
+        if (event.type === 'generation_started') {
+          setIsThinking(true);
+        } else if (event.type === 'assistant_text_delta') {
           if (!createdAssistantMessage) {
             setIsThinking(false);
             createdAssistantMessage = true;
@@ -189,6 +207,23 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
               ),
             );
           }
+        } else if (event.type === 'assistant_message_completed') {
+          setIsThinking(false);
+          setActiveStreamingId(null);
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId
+                ? {
+                    ...msg,
+                    id: event.message.id,
+                    content: event.message.content,
+                  }
+                : msg,
+            ),
+          );
+        } else if (event.type === 'generation_completed') {
+          setIsThinking(false);
+          setActiveStreamingId(null);
         } else if (event.type === 'error') {
           setIsThinking(false);
           setActiveStreamingId(null);
@@ -201,8 +236,6 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
               timestamp: Date.now(),
             },
           ]);
-        } else if (event.type === 'completed') {
-          setActiveStreamingId(null);
         }
       }
     } catch (error) {

@@ -23,3 +23,5 @@ export interface CommandContext {
   interactive: boolean;
   prompt?: string;
 }
+
+export * from './provider.js';
