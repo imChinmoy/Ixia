@@ -6,7 +6,7 @@ export interface CapabilitiesProps {
   width?: number | string;
 }
 
-export const SORA_CAPABILITIES = [
+export const IXIA_CAPABILITIES = [
   {
     title: 'Conversational AI',
     desc: 'Ask programming questions and get responses',
@@ -39,11 +39,11 @@ export const Capabilities: React.FC<CapabilitiesProps> = ({ width }) => {
         Current Capabilities
       </Text>
       <Box height={1} />
-      {SORA_CAPABILITIES.map((cap, idx) => (
+      {IXIA_CAPABILITIES.map((cap, idx) => (
         <Box
           key={cap.title}
           flexDirection="column"
-          marginBottom={idx < SORA_CAPABILITIES.length - 1 ? 1 : 0}
+          marginBottom={idx < IXIA_CAPABILITIES.length - 1 ? 1 : 0}
         >
           <Box flexDirection="row">
             <Text color={theme.primary}>◇ </Text>

@@ -33,7 +33,7 @@ describe('Core Errors', () => {
   it('should create IxiaError with default and custom codes', () => {
     const defaultErr = new IxiaError('A basic error');
     expect(defaultErr.name).toBe('IxiaError');
-    expect(defaultErr.code).toBe('SORA_ERROR');
+    expect(defaultErr.code).toBe('IXIA_ERROR');
     expect(defaultErr.exitCode).toBe(1);
     expect(isIxiaError(defaultErr)).toBe(true);
 

@@ -16,9 +16,9 @@ import {
   AssistantMessage,
   Spinner,
   QUICK_COMMANDS,
-  SORA_CAPABILITIES,
-  SORA_PIXEL_LOGO,
-  SORA_LOGO_GRADIENT,
+  IXIA_CAPABILITIES,
+  IXIA_PIXEL_LOGO,
+  IXIA_LOGO_GRADIENT,
 } from '../apps/cli/src/ui/index.js';
 
 describe('UI Redesign - Theme & Layout System', () => {
@@ -90,9 +90,9 @@ describe('UI Redesign - Theme & Layout System', () => {
 });
 
 describe('UI Redesign - Content & Component Grounding', () => {
-  it('should contain only actual implemented capabilities in SORA_CAPABILITIES', () => {
-    expect(SORA_CAPABILITIES).toHaveLength(4);
-    const titles = SORA_CAPABILITIES.map((c) => c.title);
+  it('should contain only actual implemented capabilities in IXIA_CAPABILITIES', () => {
+    expect(IXIA_CAPABILITIES).toHaveLength(4);
+    const titles = IXIA_CAPABILITIES.map((c) => c.title);
     expect(titles).toContain('Conversational AI');
     expect(titles).toContain('Filesystem Intelligence');
     expect(titles).toContain('Shell Execution');
@@ -131,8 +131,8 @@ describe('UI Redesign - Content & Component Grounding', () => {
   });
 
   it('should define bold, weighted pixel-art IXIA logo lines and gradient', () => {
-    expect(SORA_PIXEL_LOGO).toHaveLength(6);
-    expect(SORA_PIXEL_LOGO[0]).toContain('███████╗');
-    expect(SORA_LOGO_GRADIENT).toHaveLength(6);
+    expect(IXIA_PIXEL_LOGO).toHaveLength(6);
+    expect(IXIA_PIXEL_LOGO[0]).toContain('███████╗');
+    expect(IXIA_LOGO_GRADIENT).toHaveLength(6);
   });
 });

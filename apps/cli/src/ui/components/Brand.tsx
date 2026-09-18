@@ -8,7 +8,7 @@ export interface BrandProps {
   compact?: boolean;
 }
 
-export const SORA_PIXEL_LOGO = [
+export const IXIA_PIXEL_LOGO = [
   ' ███████╗  ██████╗  ██████╗   █████╗ ',
   ' ██╔════╝ ██╔═══██╗ ██╔══██╗ ██╔══██╗',
   ' ███████╗ ██║   ██║ ██████╔╝ ███████║',
@@ -17,7 +17,7 @@ export const SORA_PIXEL_LOGO = [
   ' ╚══════╝  ╚═════╝  ╚═╝  ╚═╝ ╚═╝  ╚═╝',
 ];
 
-export const SORA_LOGO_GRADIENT = [
+export const IXIA_LOGO_GRADIENT = [
   '#93C5FD', // Soft Sky Blue
   '#60A5FA', // Vibrant Blue
   '#6366F1', // Primary Indigo
@@ -45,8 +45,8 @@ export const Brand: React.FC<BrandProps> = ({ version = DEFAULT_VERSION, compact
     <Box flexDirection="column" marginY={1}>
       <Box flexDirection="row" justifyContent="space-between" alignItems="flex-end" width="100%">
         <Box flexDirection="column">
-          {SORA_PIXEL_LOGO.map((line, idx) => (
-            <Text key={idx} bold color={SORA_LOGO_GRADIENT[idx] || theme.primary}>
+          {IXIA_PIXEL_LOGO.map((line, idx) => (
+            <Text key={idx} bold color={IXIA_LOGO_GRADIENT[idx] || theme.primary}>
               {line}
             </Text>
           ))}

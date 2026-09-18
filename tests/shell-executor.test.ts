@@ -155,8 +155,8 @@ describe('ShellService and ProcessExecutor', () => {
 
   it('should support custom environment variables in execution options', async () => {
     const result = await shellService.execute(
-      'node -e "console.log(process.env.SORA_TEST_VAR)"',
-      { env: { SORA_TEST_VAR: 'custom_value_42' } },
+      'node -e "console.log(process.env.IXIA_TEST_VAR)"',
+      { env: { IXIA_TEST_VAR: 'custom_value_42' } },
       tempDir,
     );
 

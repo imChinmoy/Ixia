@@ -4,7 +4,7 @@ export class IxiaError extends Error {
   readonly code: string;
   readonly exitCode: number;
 
-  constructor(message: string, code = 'SORA_ERROR', exitCode: number = EXIT_CODES.ERROR) {
+  constructor(message: string, code = 'IXIA_ERROR', exitCode: number = EXIT_CODES.ERROR) {
     super(message);
     this.name = 'IxiaError';
     this.code = code;

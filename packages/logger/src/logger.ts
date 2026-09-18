@@ -95,7 +95,7 @@ export function createLogger(options?: LoggerOptions): Logger {
 }
 
 export const logger = createLogger({
-  level: (process.env['SORA_LOG_LEVEL'] as LogLevel) || 'silent',
+  level: (process.env['IXIA_LOG_LEVEL'] as LogLevel) || 'silent',
   destination: (record) => {
     // Kept separate from stdout so terminal UI is not disturbed
     const formatted = `[${record.timestamp}] [${record.level.toUpperCase()}] ${record.message}`;
