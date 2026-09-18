@@ -1,7 +1,5 @@
 import React from 'react';
-import process from 'node:process';
 import { Box, Text } from 'ink';
-import { formatPath } from '@sora/shared';
 
 export interface StatusBarProps {
   cwd?: string;
@@ -10,32 +8,13 @@ export interface StatusBarProps {
   showMode?: boolean;
 }
 
-export const StatusBar: React.FC<StatusBarProps> = ({
-  cwd = process.cwd(),
-  model,
-  mode = 'Interactive',
-  showMode = false,
-}) => {
-  const formattedCwd = formatPath(cwd);
+export const StatusBar: React.FC<StatusBarProps> = () => {
+  const dividerWidth = 64;
 
   return (
-    <Box flexDirection="column" marginY={1}>
-      <Box>
-        <Text color="gray">Directory: </Text>
-        <Text color="cyan">{formattedCwd}</Text>
-      </Box>
-      {model && (
-        <Box>
-          <Text color="gray">Model: </Text>
-          <Text color="green">{model}</Text>
-        </Box>
-      )}
-      {showMode && (
-        <Box>
-          <Text color="gray">Mode: </Text>
-          <Text color="green">{mode}</Text>
-        </Box>
-      )}
+    <Box flexDirection="column" marginTop={1}>
+      <Text color="gray">{'─'.repeat(dividerWidth)}</Text>
+      <Text color="gray">Enter to send · Ctrl+C to exit · /help for commands</Text>
     </Box>
   );
 };

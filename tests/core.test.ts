@@ -15,8 +15,8 @@ import {
 describe('Core Constants', () => {
   it('should define application metadata constants', () => {
     expect(APP_NAME).toBe('Sora');
-    expect(APP_DESCRIPTION).toBe('AI coding agent for your terminal');
-    expect(DEFAULT_VERSION).toBe('0.1.0');
+    expect(APP_DESCRIPTION).toBe('AI coding agent');
+    expect(DEFAULT_VERSION).toBe('0.2.0');
     expect(PROMPT_SYMBOL).toBe('❯');
   });
 

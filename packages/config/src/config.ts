@@ -102,9 +102,7 @@ function parseAndApplyEnv(content: string): void {
 
 export function loadEnv(customPath?: string): void {
   const envPath =
-    customPath ??
-    findEnvFile(process.cwd()) ??
-    findEnvFile(fileURLToPath(import.meta.url));
+    customPath ?? findEnvFile(process.cwd()) ?? findEnvFile(fileURLToPath(import.meta.url));
 
   if (!envPath) {
     return;

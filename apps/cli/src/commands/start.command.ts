@@ -49,7 +49,9 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
   logger.debug('Starting interactive terminal UI session');
   await renderInteractiveUI({
     cwd: process.cwd(),
+    provider: 'Groq',
     model: config.llm.model,
+    version: config.version,
     conversationManager,
   });
 }

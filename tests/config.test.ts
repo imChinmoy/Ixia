@@ -23,7 +23,7 @@ describe('Config Package', () => {
 
   it('should return valid default configuration', () => {
     const config = getDefaultConfig();
-    expect(config.version).toBe('0.1.0');
+    expect(config.version).toBe('0.2.0');
     expect(config.theme).toBe('default');
     expect(config.llm.model).toBe(DEFAULT_LLM_MODEL);
     expect(config.llm.provider).toBe('groq');
@@ -88,7 +88,7 @@ describe('Config Package', () => {
       },
     });
 
-    expect(config.version).toBe('0.1.0');
+    expect(config.version).toBe('0.2.0');
     expect(config.llm.model).toBe('overridden-model');
     expect(config.llm.apiKey).toBe('overridden-key');
   });
@@ -106,7 +106,7 @@ describe('Config Package', () => {
 
   it('should manage config values using ConfigManager', () => {
     const manager = new ConfigManager(DEFAULT_CONFIG);
-    expect(manager.get('version')).toBe('0.1.0');
+    expect(manager.get('version')).toBe('0.2.0');
 
     manager.set('theme', 'default');
     expect(manager.get('theme')).toBe('default');

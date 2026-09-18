@@ -1,25 +1,26 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { APP_NAME, APP_DESCRIPTION } from '@sora/core';
+import { APP_NAME, APP_DESCRIPTION, DEFAULT_VERSION } from '@sora/core';
 
 export interface HeaderProps {
+  version?: string;
   compact?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ compact = false }) => {
+export const Header: React.FC<HeaderProps> = ({ version = DEFAULT_VERSION, compact = false }) => {
   if (compact) {
     return (
       <Box
         borderStyle="round"
         borderColor="cyan"
-        paddingX={3}
-        flexDirection="column"
-        alignItems="center"
-        width={46}
+        paddingX={2}
+        width={64}
+        justifyContent="space-between"
       >
         <Text bold color="cyan">
-          {APP_NAME.toUpperCase().split('').join(' ')}
+          ✦ {APP_NAME.toUpperCase()}
         </Text>
+        <Text color="gray">v{version}</Text>
       </Box>
     );
   }
@@ -28,17 +29,20 @@ export const Header: React.FC<HeaderProps> = ({ compact = false }) => {
     <Box
       borderStyle="round"
       borderColor="cyan"
-      paddingX={3}
-      paddingY={1}
+      paddingX={2}
+      paddingY={0}
       flexDirection="column"
-      alignItems="center"
-      width={46}
+      width={64}
     >
-      <Text bold color="cyan">
-        {APP_NAME.toUpperCase().split('').join(' ')}
-      </Text>
-      <Box height={1} />
-      <Text color="gray">{APP_DESCRIPTION}</Text>
+      <Box justifyContent="space-between" width="100%">
+        <Text bold color="cyan">
+          ✦ {APP_NAME.toUpperCase()}
+        </Text>
+        <Text color="gray">v{version}</Text>
+      </Box>
+      <Box width="100%">
+        <Text color="gray">{APP_DESCRIPTION}</Text>
+      </Box>
     </Box>
   );
 };

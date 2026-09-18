@@ -19,8 +19,8 @@ describe('CLI Commander Program', () => {
   it('should have correct name, description, and version', () => {
     const program = createProgram();
     expect(program.name()).toBe('sora');
-    expect(program.description()).toBe('AI coding agent for your terminal');
-    expect(program.version()).toBe('0.1.0');
+    expect(program.description()).toBe('AI coding agent');
+    expect(program.version()).toBe('0.2.0');
   });
 
   it('should have prompt argument registered', () => {
