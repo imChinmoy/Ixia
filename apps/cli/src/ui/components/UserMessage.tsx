@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { PROMPT_SYMBOL } from '@sora/core';
+import { theme } from '../theme/theme.js';
 
 export interface UserMessageProps {
   content: string;
@@ -8,11 +8,11 @@ export interface UserMessageProps {
 
 export const UserMessage: React.FC<UserMessageProps> = ({ content }) => {
   return (
-    <Box marginY={1}>
-      <Text bold color="cyan">
-        {PROMPT_SYMBOL}{' '}
+    <Box marginY={1} flexDirection="row">
+      <Text bold color={theme.secondary}>
+        ›{' '}
       </Text>
-      <Text bold color="white">
+      <Text bold color={theme.text}>
         {content}
       </Text>
     </Box>

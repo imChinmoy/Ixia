@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import chalk from 'chalk';
+import { theme } from '../theme/theme.js';
 
 export interface MarkdownBlock {
   type: 'code' | 'text';
@@ -100,20 +101,20 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           return (
             <Box key={bIdx} flexDirection="column" marginY={1}>
               <Box>
-                <Text color="gray">┌─ </Text>
-                <Text bold color="cyan">
+                <Text color={theme.dim}>┌─ </Text>
+                <Text bold color={theme.secondary}>
                   {block.lang || 'code'}
                 </Text>
-                <Text color="gray"> ────────────────────────────────────────</Text>
+                <Text color={theme.dim}> ────────────────────────────────────────</Text>
               </Box>
               {block.lines.map((line, lIdx) => (
                 <Box key={lIdx}>
-                  <Text color="gray">│ </Text>
+                  <Text color={theme.dim}>│ </Text>
                   <Text>{highlightCodeLine(line)}</Text>
                 </Box>
               ))}
               <Box>
-                <Text color="gray">└─────────────────────────────────────────────</Text>
+                <Text color={theme.dim}>└─────────────────────────────────────────────</Text>
               </Box>
             </Box>
           );
@@ -128,7 +129,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
                 const headingText = trimmed.replace(/^#+\s*/, '');
                 return (
                   <Box key={lIdx} marginY={0}>
-                    <Text bold color="cyan">
+                    <Text bold color={theme.secondary}>
                       {headingText}
                     </Text>
                   </Box>
@@ -139,7 +140,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
               if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
                 return (
                   <Box key={lIdx} paddingLeft={1}>
-                    <Text color="cyan">• </Text>
+                    <Text color={theme.primary}>• </Text>
                     <Text>{formatInlineMarkdown(trimmed.slice(2))}</Text>
                   </Box>
                 );
@@ -150,7 +151,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
               if (numMatch && numMatch[1] && numMatch[2]) {
                 return (
                   <Box key={lIdx} paddingLeft={1}>
-                    <Text color="cyan">{numMatch[1]} </Text>
+                    <Text color={theme.primary}>{numMatch[1]} </Text>
                     <Text>{formatInlineMarkdown(numMatch[2])}</Text>
                   </Box>
                 );

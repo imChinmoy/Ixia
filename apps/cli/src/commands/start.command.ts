@@ -3,6 +3,9 @@ import chalk from 'chalk';
 import { EXIT_CODES, ConversationManager } from '@sora/core';
 import { loadConfig, validateLLMConfig } from '@sora/config';
 import { GroqProvider } from '@sora/llm';
+import { ToolRegistry } from '@sora/tools';
+import { registerFilesystemTools } from '@sora/filesystem';
+import { registerShellTools } from '@sora/shell';
 import { renderInteractiveUI } from '../ui/index.js';
 import { logger } from '@sora/logger';
 
@@ -48,6 +51,15 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
     return;
   }
 
+  // Discover actual registered tools for UI reference
+  const toolRegistry = new ToolRegistry();
+  registerFilesystemTools(toolRegistry);
+  registerShellTools(toolRegistry);
+  const tools = toolRegistry.list().map((t) => ({
+    name: t.name,
+    description: t.description,
+  }));
+
   // Interactive mode
   logger.debug('Starting interactive terminal UI session');
   await renderInteractiveUI({
@@ -56,5 +68,6 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
     model: config.llm.model,
     version: config.version,
     conversationManager,
+    tools,
   });
 }

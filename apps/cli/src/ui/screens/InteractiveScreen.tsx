@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import process from 'node:process';
-import { Box, Text, useApp } from 'ink';
+import { Box, useApp } from 'ink';
 import { Header } from '../components/Header.js';
-import { SessionInfo } from '../components/SessionInfo.js';
+import { Brand } from '../components/Brand.js';
+import { Welcome } from '../components/Welcome.js';
+import { QuickCommands } from '../components/QuickCommands.js';
+import { Capabilities } from '../components/Capabilities.js';
+import { Divider } from '../components/Divider.js';
 import { Conversation } from '../components/Conversation.js';
 import { InputPrompt } from '../components/InputPrompt.js';
 import { StatusBar } from '../components/StatusBar.js';
 import { Spinner } from '../components/Spinner.js';
 import { isSlashCommand, handleSlashCommand } from '../slash.js';
+import { useTerminalLayout } from '../layout/terminal-layout.js';
+import type { ToolItem } from '../components/ToolsPanel.js';
 import {
   EXIT_COMMANDS,
   DEFAULT_VERSION,
@@ -22,6 +28,7 @@ export interface InteractiveScreenProps {
   model?: string;
   version?: string;
   conversationManager?: ConversationManager;
+  tools?: ToolItem[];
   onExit?: () => void;
 }
 
@@ -31,9 +38,11 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
   model = 'openai/gpt-oss-120b',
   version = DEFAULT_VERSION,
   conversationManager,
+  tools,
   onExit,
 }) => {
   const { exit } = useApp();
+  const layout = useTerminalLayout();
   const [uiState, setUiState] = useState<UIState>('input');
   const [messages, setMessages] = useState<MessageItem[]>([]);
   const [isThinking, setIsThinking] = useState(false);
@@ -56,7 +65,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
     const randomSuffix = Math.random().toString(36).substring(2, 9);
     const trimmed = input.trim();
 
-    // 1. Check for exit commands (exit or quit, with or without slash)
+    // 1. Check for standard exit commands (exit or quit, with or without slash)
     const isStandardExit = EXIT_COMMANDS.includes(
       trimmed.toLowerCase() as (typeof EXIT_COMMANDS)[number],
     );
@@ -81,13 +90,15 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
       return;
     }
 
-    // 2. Check for slash commands (/help, /clear, /status, /model, /exit, /quit)
+    // 2. Check for slash commands
     if (isSlashCommand(trimmed)) {
       const slashResult = handleSlashCommand(trimmed, {
         cwd: initialCwd,
         model,
         provider,
         version,
+        tools,
+        messagesCount: messages.length,
       });
 
       if (slashResult) {
@@ -113,14 +124,7 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
           if (conversationManager) {
             conversationManager.clear();
           }
-          setMessages([
-            {
-              id: `msg-sys-${timestamp}-${randomSuffix}`,
-              type: 'system',
-              content: slashResult.message,
-              timestamp,
-            },
-          ]);
+          setMessages([]);
           return;
         }
 
@@ -131,10 +135,17 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
           timestamp,
         };
 
+        let responseContent = slashResult.message;
+        if (slashResult.type === 'help') {
+          responseContent = '__HELP_PANEL__';
+        } else if (slashResult.type === 'tools') {
+          responseContent = '__TOOLS_PANEL__';
+        }
+
         const responseMessage: MessageItem = {
           id: `msg-info-${timestamp}-${randomSuffix}`,
           type: slashResult.type === 'unknown' ? 'error' : 'info',
-          content: slashResult.type === 'help' ? '__HELP_PANEL__' : slashResult.message,
+          content: responseContent,
           timestamp: timestamp + 1,
         };
 
@@ -258,19 +269,73 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
     }
   };
 
-  const dividerWidth = 64;
+  const hasMessages = messages.length > 0;
+  const dividerWidth = Math.min(layout.columns - 4, 100);
 
   return (
-    <Box flexDirection="column" paddingY={1}>
-      <Header version={version} />
-      <SessionInfo cwd={initialCwd} provider={provider} model={model} />
-      <Box marginY={0}>
-        <Text color="gray">{'─'.repeat(dividerWidth)}</Text>
-      </Box>
-      <Conversation messages={messages} activeStreamingId={activeStreamingId} />
-      {isThinking && <Spinner />}
-      <InputPrompt onSubmit={handleSubmit} isDisabled={uiState !== 'input'} />
-      <StatusBar />
+    <Box flexDirection="column" paddingX={1} paddingY={0} width="100%">
+      {!hasMessages ? (
+        // Fresh Session: Full Welcome Dashboard
+        <Box flexDirection="column" width="100%">
+          <Header version={version} />
+          <Brand version={version} compact={false} />
+          <Divider width={dividerWidth} />
+          <Welcome />
+
+          {!layout.isNarrow && !layout.isCompactHeight && (
+            <Box
+              flexDirection="row"
+              justifyContent="space-between"
+              width="100%"
+              marginY={1}
+            >
+              <QuickCommands width="48%" />
+              <Capabilities width="48%" />
+            </Box>
+          )}
+
+          {layout.isNarrow && !layout.isCompactHeight && (
+            <Box flexDirection="column" width="100%" marginY={1}>
+              <QuickCommands width="100%" />
+              <Box height={1} />
+              <Capabilities width="100%" />
+            </Box>
+          )}
+
+          {layout.isCompactHeight && (
+            <Box flexDirection="column" width="100%" marginY={1}>
+              <QuickCommands width="100%" />
+            </Box>
+          )}
+        </Box>
+      ) : (
+        // Active Conversation: Compact Brand + History
+        <Box flexDirection="column" width="100%">
+          <Brand version={version} compact={true} />
+          <Divider width={dividerWidth} />
+          <Conversation
+            messages={messages}
+            activeStreamingId={activeStreamingId}
+            tools={tools}
+          />
+          {isThinking && <Spinner />}
+        </Box>
+      )}
+
+      {/* Input Prompt (Always at bottom) */}
+      <InputPrompt
+        onSubmit={handleSubmit}
+        isDisabled={uiState !== 'input'}
+        width="100%"
+      />
+
+      {/* Status Bar */}
+      <StatusBar
+        cwd={initialCwd}
+        provider={provider}
+        model={model}
+        width={dividerWidth}
+      />
     </Box>
   );
 };

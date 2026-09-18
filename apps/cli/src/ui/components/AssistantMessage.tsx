@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 import { MarkdownRenderer } from '../utils/markdown.js';
+import { theme } from '../theme/theme.js';
 
 export interface AssistantMessageProps {
   content: string;
@@ -11,24 +12,24 @@ export const AssistantMessage: React.FC<AssistantMessageProps> = ({
   content,
   isStreaming = false,
 }) => {
-  const dividerWidth = 64;
-
   return (
     <Box flexDirection="column" marginY={1}>
       <Box flexDirection="row" alignItems="center">
-        <Text bold color="cyan">
-          Sora
+        <Text bold color={theme.primary}>
+          ✦ Sora
         </Text>
-        {isStreaming && <Text color="yellow"> ⠋</Text>}
+        {isStreaming && (
+          <Text color={theme.muted}>
+            {' '}
+            <Text color={theme.secondary}>●</Text> streaming...
+          </Text>
+        )}
       </Box>
-      <Box>
-        <Text color="gray">{'─'.repeat(dividerWidth)}</Text>
-      </Box>
-      <Box marginTop={1} flexDirection="column">
+      <Box marginTop={1} paddingLeft={2} flexDirection="column">
         {content.length > 0 ? (
           <MarkdownRenderer content={content} />
         ) : (
-          <Text color="gray">Generating response...</Text>
+          <Text color={theme.muted}>Thinking...</Text>
         )}
       </Box>
     </Box>

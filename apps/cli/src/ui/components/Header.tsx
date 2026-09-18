@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Text } from 'ink';
-import { APP_NAME, APP_DESCRIPTION, DEFAULT_VERSION } from '@sora/core';
+import { DEFAULT_VERSION } from '@sora/core';
+import { theme } from '../theme/theme.js';
 
 export interface HeaderProps {
   version?: string;
@@ -10,39 +11,20 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ version = DEFAULT_VERSION, compact = false }) => {
   if (compact) {
     return (
-      <Box
-        borderStyle="round"
-        borderColor="cyan"
-        paddingX={2}
-        width={64}
-        justifyContent="space-between"
-      >
-        <Text bold color="cyan">
-          ✦ {APP_NAME.toUpperCase()}
+      <Box width="100%" justifyContent="space-between" marginBottom={1}>
+        <Text bold color={theme.primary}>
+          ✦ SORA
         </Text>
-        <Text color="gray">v{version}</Text>
+        <Text color={theme.muted}>v{version}</Text>
       </Box>
     );
   }
 
   return (
-    <Box
-      borderStyle="round"
-      borderColor="cyan"
-      paddingX={2}
-      paddingY={0}
-      flexDirection="column"
-      width={64}
-    >
-      <Box justifyContent="space-between" width="100%">
-        <Text bold color="cyan">
-          ✦ {APP_NAME.toUpperCase()}
-        </Text>
-        <Text color="gray">v{version}</Text>
-      </Box>
-      <Box width="100%">
-        <Text color="gray">{APP_DESCRIPTION}</Text>
-      </Box>
+    <Box width="100%" justifyContent="center" marginBottom={1}>
+      <Text color={theme.muted}>
+        sora <Text color={theme.dim}>—</Text> AI Coding Assistant
+      </Text>
     </Box>
   );
 };

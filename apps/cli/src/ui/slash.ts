@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { DEFAULT_VERSION } from '@sora/core';
 import { formatPath } from '@sora/shared';
 
@@ -6,12 +7,17 @@ export interface SlashContext {
   model?: string;
   provider?: string;
   version?: string;
+  tools?: Array<{ name: string; description: string }>;
+  messagesCount?: number;
 }
 
 export type SlashResult =
   | { type: 'exit' }
   | { type: 'clear'; message: string }
   | { type: 'help'; message: string }
+  | { type: 'tools'; message: string }
+  | { type: 'cwd'; message: string }
+  | { type: 'config'; message: string }
   | { type: 'status'; message: string }
   | { type: 'model'; message: string }
   | { type: 'unknown'; command: string; message: string };
@@ -37,15 +43,52 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
           'Sora Commands',
           '',
           '  /help       Show available commands',
+          '  /tools      List available tools',
+          '  /cwd        Show current directory',
           '  /clear      Clear conversation',
-          '  /status     Show current session information',
+          '  /new        Start a new session',
           '  /model      Show active model',
+          '  /config     Show configuration',
+          '  /status     Show current session information',
           '  /exit       Exit Sora',
           '  /quit       Exit Sora',
         ].join('\n'),
       };
 
+    case '/tools': {
+      const tools =
+        context.tools && context.tools.length > 0
+          ? context.tools
+          : [
+              { name: 'list_directory', description: 'List directory contents' },
+              { name: 'read_file', description: 'Read text files' },
+              { name: 'search_files', description: 'Search project files' },
+              { name: 'file_info', description: 'Inspect file metadata' },
+              { name: 'execute_command', description: 'Execute terminal commands' },
+            ];
+
+      const lines = [
+        'Available Tools',
+        '',
+        ...tools.flatMap((t) => [`  ◆ ${t.name}`, `    ${t.description}`, '']),
+      ];
+
+      return {
+        type: 'tools',
+        message: lines.join('\n').trimEnd(),
+      };
+    }
+
+    case '/cwd': {
+      const cwd = formatPath(context.cwd || process.cwd());
+      return {
+        type: 'cwd',
+        message: `Current working directory: ${cwd}`,
+      };
+    }
+
     case '/clear':
+    case '/new':
       return {
         type: 'clear',
         message: 'Conversation cleared.',
@@ -56,6 +99,8 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
       const provider = context.provider || 'Groq';
       const model = context.model || 'openai/gpt-oss-120b';
       const cwd = formatPath(context.cwd || process.cwd());
+      const toolsCount = context.tools?.length ?? 5;
+      const msgCount = context.messagesCount ?? 0;
 
       return {
         type: 'status',
@@ -66,7 +111,28 @@ export function handleSlashCommand(input: string, context: SlashContext = {}): S
           `  Provider    ${provider}`,
           `  Model       ${model}`,
           `  Directory   ${cwd}`,
+          `  Tools       ${toolsCount} available`,
+          `  Messages    ${msgCount}`,
           '  Mode        Interactive',
+        ].join('\n'),
+      };
+    }
+
+    case '/config': {
+      const version = context.version || DEFAULT_VERSION;
+      const provider = context.provider || 'Groq';
+      const model = context.model || 'openai/gpt-oss-120b';
+      const cwd = formatPath(context.cwd || process.cwd());
+
+      return {
+        type: 'config',
+        message: [
+          'Sora Configuration',
+          '',
+          `  Provider     ${provider}`,
+          `  Model        ${model}`,
+          `  Directory    ${cwd}`,
+          `  Version      ${version}`,
         ].join('\n'),
       };
     }

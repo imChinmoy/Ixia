@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text } from 'ink';
+import { theme } from '../theme/theme.js';
 
 export interface SpinnerProps {
   label?: string;
@@ -7,7 +8,7 @@ export interface SpinnerProps {
 
 const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 
-export const Spinner: React.FC<SpinnerProps> = ({ label = 'Thinking...' }) => {
+export const Spinner: React.FC<SpinnerProps> = ({ label = 'thinking...' }) => {
   const [frameIndex, setFrameIndex] = useState(0);
 
   useEffect(() => {
@@ -19,12 +20,12 @@ export const Spinner: React.FC<SpinnerProps> = ({ label = 'Thinking...' }) => {
   }, []);
 
   return (
-    <Box flexDirection="row" marginY={1}>
-      <Text bold color="cyan">
-        Sora{' '}
+    <Box flexDirection="row" alignItems="center" marginY={1}>
+      <Text bold color={theme.primary}>
+        ✦ Sora
       </Text>
-      <Text color="yellow">{SPINNER_FRAMES[frameIndex]} </Text>
-      <Text color="gray">{label}</Text>
+      <Text color={theme.secondary}> {SPINNER_FRAMES[frameIndex]} </Text>
+      <Text color={theme.muted}>{label}</Text>
     </Box>
   );
 };

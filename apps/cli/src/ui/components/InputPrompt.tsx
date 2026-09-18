@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput, useStdin } from 'ink';
-import { PROMPT_SYMBOL } from '@sora/core';
+import { theme } from '../theme/theme.js';
 
 export interface InputPromptProps {
   onSubmit: (value: string) => Promise<void> | void;
   isDisabled?: boolean;
+  placeholder?: string;
+  width?: number | string;
 }
 
-export const InputPrompt: React.FC<InputPromptProps> = ({ onSubmit, isDisabled = false }) => {
+export const InputPrompt: React.FC<InputPromptProps> = ({
+  onSubmit,
+  isDisabled = false,
+  placeholder = 'Type a message or /command...',
+  width = '100%',
+}) => {
   const [input, setInput] = useState('');
   const { isRawModeSupported, stdin } = useStdin();
 
@@ -66,17 +73,26 @@ export const InputPrompt: React.FC<InputPromptProps> = ({ onSubmit, isDisabled =
     };
   }, [isDisabled, isRawModeSupported, onSubmit, stdin]);
 
-  if (isDisabled) {
-    return null;
-  }
+  const borderColor = isDisabled ? theme.dim : theme.primary;
 
   return (
-    <Box marginY={1}>
-      <Text bold color="cyan">
-        {PROMPT_SYMBOL}{' '}
+    <Box
+      borderStyle="round"
+      borderColor={borderColor}
+      paddingX={1}
+      paddingY={0}
+      marginY={1}
+      width={width}
+    >
+      <Text bold color={theme.secondary}>
+        ›{' '}
       </Text>
-      <Text color="white">{input}</Text>
-      <Text color="gray">_</Text>
+      {input.length === 0 ? (
+        <Text color={theme.muted}>{isDisabled ? 'Sora is thinking...' : placeholder}</Text>
+      ) : (
+        <Text color={theme.text}>{input}</Text>
+      )}
+      {!isDisabled && <Text color={theme.secondary}>_</Text>}
     </Box>
   );
 };

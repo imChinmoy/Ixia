@@ -83,6 +83,59 @@ describe('Slash Commands', () => {
     }
   });
 
+  it('should handle /tools command with available tools list', () => {
+    const result = handleSlashCommand('/tools', {
+      tools: [
+        { name: 'list_directory', description: 'List directory contents' },
+        { name: 'read_file', description: 'Read text files' },
+      ],
+    });
+
+    expect(result).not.toBeNull();
+    expect(result?.type).toBe('tools');
+    if (result && result.type === 'tools') {
+      expect(result.message).toContain('Available Tools');
+      expect(result.message).toContain('list_directory');
+      expect(result.message).toContain('read_file');
+    }
+  });
+
+  it('should handle /cwd command', () => {
+    const result = handleSlashCommand('/cwd', { cwd: '/test/workspace' });
+    expect(result).not.toBeNull();
+    expect(result?.type).toBe('cwd');
+    if (result && result.type === 'cwd') {
+      expect(result.message).toContain('Current working directory:');
+      expect(result.message).toContain('workspace');
+    }
+  });
+
+  it('should handle /new command as alias for clear', () => {
+    const result = handleSlashCommand('/new');
+    expect(result).not.toBeNull();
+    expect(result?.type).toBe('clear');
+    if (result && result.type === 'clear') {
+      expect(result.message).toBe('Conversation cleared.');
+    }
+  });
+
+  it('should handle /config command', () => {
+    const result = handleSlashCommand('/config', {
+      version: '0.2.0',
+      provider: 'Groq',
+      model: 'openai/gpt-oss-120b',
+      cwd: '/home/user/project',
+    });
+
+    expect(result).not.toBeNull();
+    expect(result?.type).toBe('config');
+    if (result && result.type === 'config') {
+      expect(result.message).toContain('Sora Configuration');
+      expect(result.message).toContain('Groq');
+      expect(result.message).toContain('openai/gpt-oss-120b');
+    }
+  });
+
   it('should return null for non-slash inputs', () => {
     expect(handleSlashCommand('What is a REST API?')).toBeNull();
     expect(handleSlashCommand('Explain /help in bash')).toBeNull();
