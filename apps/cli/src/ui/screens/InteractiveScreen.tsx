@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import process from 'node:process';
 import { Box, useApp } from 'ink';
 import { Header } from '../components/Header.js';
 import { StatusBar } from '../components/StatusBar.js';

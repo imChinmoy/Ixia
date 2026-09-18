@@ -1,3 +1,5 @@
+import process from 'node:process';
+
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'silent';
 
 export interface LogRecord {

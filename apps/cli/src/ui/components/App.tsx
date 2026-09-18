@@ -1,4 +1,5 @@
 import React from 'react';
+import process from 'node:process';
 import { Box } from 'ink';
 import { InteractiveScreen } from '../screens/InteractiveScreen.js';
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import process from 'node:process';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 import { APP_DESCRIPTION, DEFAULT_VERSION, EXIT_CODES, isSoraError } from '@sora/core';
 import { startCommand } from './commands/start.command.js';
@@ -51,9 +54,6 @@ export async function run(argv: string[] = process.argv): Promise<void> {
   }
 }
 
-import { fileURLToPath } from 'node:url';
-import fs from 'node:fs';
-
 const isMainModule = (): boolean => {
   if (!process.argv[1]) return false;
   try {
@@ -66,7 +66,7 @@ const isMainModule = (): boolean => {
 };
 
 if (isMainModule()) {
-  run().catch((error) => {
+  run().catch((error: unknown) => {
     console.error(`Fatal error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(EXIT_CODES.ERROR);
   });
