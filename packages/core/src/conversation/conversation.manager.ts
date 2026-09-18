@@ -114,6 +114,8 @@ export class ConversationManager {
         if (event.type === 'text_delta') {
           accumulatedText += event.content;
           yield { type: 'assistant_text_delta', content: event.content };
+        } else if (event.type === 'tool_call') {
+          yield { type: 'tool_call', toolCall: event.toolCall };
         } else if (event.type === 'error') {
           this.status = 'error';
           yield { type: 'error', error: event.error };

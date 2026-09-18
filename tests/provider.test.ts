@@ -175,4 +175,122 @@ describe('GroqProvider', () => {
       expect(events[0].error).toBeInstanceOf(NetworkError);
     }
   });
+
+  it('should translate Sora tool definitions into Groq format and emit tool_call events', async () => {
+    async function* createMockToolStream(): AsyncIterable<{
+      choices: Array<{
+        delta: {
+          content?: string;
+          tool_calls?: Array<{
+            index: number;
+            id?: string;
+            function?: { name?: string; arguments?: string };
+          }>;
+        };
+      }>;
+    }> {
+      yield { choices: [{ delta: { content: 'Calling echo...' } }] };
+      yield {
+        choices: [
+          {
+            delta: {
+              tool_calls: [
+                {
+                  index: 0,
+                  id: 'call_abc123',
+                  function: { name: 'echo', arguments: '{"mess' },
+                },
+              ],
+            },
+          },
+        ],
+      };
+      yield {
+        choices: [
+          {
+            delta: {
+              tool_calls: [
+                {
+                  index: 0,
+                  function: { arguments: 'age": "hello world"}' },
+                },
+              ],
+            },
+          },
+        ],
+      };
+    }
+
+    const mockCreate = vi.fn().mockResolvedValue(createMockToolStream());
+    const mockGroq = {
+      chat: {
+        completions: {
+          create: mockCreate,
+        },
+      },
+    } as unknown as Groq;
+
+    const provider = new GroqProvider({
+      model: 'openai/gpt-oss-120b',
+      client: mockGroq,
+    });
+
+    const toolDef = {
+      name: 'echo',
+      description: 'Echo message',
+      inputSchema: {
+        type: 'object' as const,
+        properties: {
+          message: { type: 'string' as const },
+        },
+        required: ['message'],
+      },
+    };
+
+    const events = [];
+    for await (const event of provider.stream([{ role: 'user', content: 'Say hi' }], {
+      tools: [toolDef],
+    })) {
+      events.push(event);
+    }
+
+    // Verify request payload sent to Groq SDK
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model: 'openai/gpt-oss-120b',
+        tools: [
+          {
+            type: 'function',
+            function: {
+              name: 'echo',
+              description: 'Echo message',
+              parameters: {
+                type: 'object',
+                properties: {
+                  message: { type: 'string' },
+                },
+                required: ['message'],
+                additionalProperties: undefined,
+              },
+            },
+          },
+        ],
+      }),
+      expect.any(Object),
+    );
+
+    // Verify emitted Sora LLM events
+    expect(events).toEqual([
+      { type: 'text_delta', content: 'Calling echo...' },
+      {
+        type: 'tool_call',
+        toolCall: {
+          id: 'call_abc123',
+          name: 'echo',
+          arguments: { message: 'hello world' },
+        },
+      },
+      { type: 'completed' },
+    ]);
+  });
 });

@@ -321,4 +321,42 @@ describe('ConversationManager (Phase 3)', () => {
     expect(manager.getMessages()).toHaveLength(0);
     expect(manager.getStatus()).toBe('idle');
   });
+
+  it('should forward tool_call events from provider stream', async () => {
+    class ToolCallingMockProvider implements LLMProvider {
+      readonly name = 'mock';
+      readonly model = 'mock-model';
+      async *stream(): AsyncIterable<LLMEvent> {
+        yield { type: 'text_delta', content: 'I will call echo.' };
+        yield {
+          type: 'tool_call',
+          toolCall: {
+            id: 'call_123',
+            name: 'echo',
+            arguments: { message: 'hello' },
+          },
+        };
+        yield { type: 'completed' };
+      }
+    }
+
+    const manager = new ConversationManager({ provider: new ToolCallingMockProvider() });
+    const events: ConversationEvent[] = [];
+
+    for await (const event of manager.send('Run echo')) {
+      events.push(event);
+    }
+
+    const toolCallEvents = events.filter((e) => e.type === 'tool_call');
+    expect(toolCallEvents).toHaveLength(1);
+    expect(toolCallEvents[0]).toEqual({
+      type: 'tool_call',
+      toolCall: {
+        id: 'call_123',
+        name: 'echo',
+        arguments: { message: 'hello' },
+      },
+    });
+    expect(manager.getStatus()).toBe('idle');
+  });
 });

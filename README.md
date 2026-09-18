@@ -2,40 +2,58 @@
 
 AI coding agent for your terminal.
 
-## Status
+## Current Status
 
-**Phase 0 + Phase 1 + Phase 2 + Phase 2.5 + Phase 3 Complete**
+Phase 4 — Tool System
 
-> [!NOTE]
-> Sora is currently at **Phase 3 (Conversation Engine)**. A robust, provider-independent conversation engine connects the terminal interface to LLM providers with full lifecycle streaming, multi-turn history, concurrency protection, and clean error recovery. Tool calling, filesystem modification, shell execution, and autonomous agent loops will be introduced in subsequent phases.
+### Completed
+
+- [x] Phase 0 — Project Foundation
+- [x] Phase 1 — Terminal CLI
+- [x] Phase 2 — Groq LLM Integration
+- [x] Phase 2.5 — UI Polish
+- [x] Phase 3 — Conversation Engine
+- [x] Phase 4 — Tool System
 
 ---
 
 ## Current Capabilities
 
-- **Provider-Independent Conversation Engine**: Clean architectural separation between UI, conversation lifecycle, provider interfaces, and LLM implementations (`@sora/core`).
-- **Typed Message Model**: Strongly typed `Message` model (`id`, `role`, `content`, `createdAt`) with cryptographically secure UUID generation and pure factory functions.
-- **State Machine & Concurrency Control**: Rigid `ConversationStatus` (`idle`, `generating`, `error`) state machine preventing interleaved or concurrent generation requests with friendly warnings.
-- **Granular Lifecycle Event Stream**: Real-time event pipeline emitting `user_message`, `generation_started`, `assistant_text_delta`, `assistant_message_completed`, `generation_completed`, and `error`.
-- **History Integrity & Error Handling**: Incomplete or aborted generations are discarded without polluting conversation history; errors are mapped cleanly.
-- **Groq LLM Provider**: Ultra-fast LLM streaming powered by Groq SDK (`@sora/llm`) with automatic `.env` discovery and typed error classification (authentication, rate limits, invalid model, network).
-- **Polished Terminal UI**: Ink/React terminal interface with styled header, session metadata, thinking indicator (spinner), syntax-highlighted code blocks, markdown rendering, and persistent status bar.
-- **Built-in Slash Commands**: In-terminal commands for quick session control (`/help`, `/clear`, `/status`, `/model`, `/exit`, `/quit`).
-- **One-Shot & Interactive Modes**: Run one-off prompts directly (`sora "<prompt>"`) or launch a full conversational terminal session (`sora`).
+- Interactive terminal interface
+- One-shot prompts
+- Groq LLM integration
+- Streaming responses
+- Multi-turn conversations
+- Conversation history during current session
+- Conversation clearing
+- Provider abstraction
+- Conversation state management
+- Error handling
+- Tool abstraction
+- Tool registry
+- Tool schema validation
+- Tool execution
+- Structured tool results
+- Tool error handling
+- Provider-independent tool calls
 
 ---
 
-## What is NOT Yet Implemented (Planned for Later Phases)
+## Not Implemented Yet
 
-To preserve architectural cleanliness and incremental development, the following features are explicitly reserved for future phases:
-
-- ❌ Tool calling & function calling (Phase 4)
-- ❌ Filesystem access & repository search (Phase 5)
-- ❌ Shell command execution & test running (Phase 6)
-- ❌ Git tools & diff inspection (Phase 6)
-- ❌ Autonomous agent loop & planning (Phase 7)
-- ❌ MCP (Model Context Protocol) integration
-- ❌ Persistent database/file session storage
+- Filesystem tools
+- Shell execution
+- Autonomous agent loop
+- Planning
+- Repository context engine
+- Repository indexing
+- Code search
+- Git integration
+- Permission system
+- Security sandbox
+- Persistent memory
+- MCP
+- Multi-model support
 
 ---
 
@@ -54,11 +72,12 @@ To preserve architectural cleanliness and incremental development, the following
                      └──────┬──────┘
                             │  LLMProvider contract
                      ┌──────▼──────┐
-                     │LLM Provider │  packages/llm (GroqProvider, Client, Error Mapper)
+                     │LLM Provider │  packages/llm (GroqProvider, Adapter, Error Mapper)
                      └──────┬──────┘
-                            │
+                            │  ToolCalls / ToolDefinitions
                      ┌──────▼──────┐
-                     │  Groq API   │  LLM Cloud Inference
+                     │ Tool System │  packages/tools (ToolRegistry, ToolExecutor,
+                     │             │  Schema Validator, Structured Errors, EchoTool)
                      └─────────────┘
 ```
 
@@ -130,14 +149,30 @@ pnpm format
 
 ## Roadmap
 
-| Phase | Description | Status |
-| :--- | :--- | :---: |
-| **Phase 0** | Project Foundation (pnpm workspace, strict TypeScript, config, logger, core types) | ✅ Complete |
-| **Phase 1** | Terminal CLI Interface (Commander parsing, Ink interactive UI, one-shot mode) | ✅ Complete |
-| **Phase 2** | Groq LLM Provider (LLM abstraction, Groq SDK streaming, error handling) | ✅ Complete |
-| **Phase 2.5** | Terminal UI Polish (Ink components, markdown, code highlighting, slash commands) | ✅ Complete |
-| **Phase 3** | Conversation Engine (Session state, lifecycle events, concurrency lock, message model) | ✅ Complete |
-| **Phase 4** | Tool Calling System (Tool definitions, parser, dispatcher) | ⏳ Upcoming |
-| **Phase 5** | Filesystem Operations & Repository Intelligence (File reading, editing, diffing, search) | ⏳ Upcoming |
-| **Phase 6** | Shell Execution & Test Runner (Terminal execution, output streaming, test recovery) | ⏳ Upcoming |
-| **Phase 7** | Autonomous Agent Loop & Orchestration (Multi-step reasoning, plan execution) | ⏳ Upcoming |
+### Foundation
+
+- [x] Phase 0 — Project Foundation
+- [x] Phase 1 — Terminal CLI
+
+### Intelligence
+
+- [x] Phase 2 — LLM Integration
+- [x] Phase 2.5 — UI Polish
+- [x] Phase 3 — Conversation Engine
+- [x] Phase 4 — Tool System
+- [ ] Phase 5 — Filesystem Intelligence
+- [ ] Phase 6 — Terminal / Shell Tool
+- [ ] Phase 7 — Agent Loop
+- [ ] Phase 8 — Repository Context Engine
+- [ ] Phase 9 — Planning System
+- [ ] Phase 10 — Verification & Self-Correction
+
+### Developer Capabilities
+
+- [ ] Phase 11 — Git Integration
+- [ ] Phase 12 — Permission & Security System
+- [ ] Phase 13 — Memory
+- [ ] Phase 14 — MCP / External Tools
+- [ ] Phase 15 — Multi-Model Architecture
+- [ ] Phase 16 — Advanced Context & Code Intelligence
+- [ ] Phase 17 — Productionization

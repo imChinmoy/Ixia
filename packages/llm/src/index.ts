@@ -5,5 +5,6 @@ export * from './provider.js';
 export * from './errors.js';
 export * from './groq/groq.client.js';
 export * from './groq/groq.provider.js';
+export * from './groq/groq.adapter.js';
 export * from './prompt.js';
 export * from './conversation.js';

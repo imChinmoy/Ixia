@@ -1,4 +1,5 @@
 import type { Message } from '../messages/message.js';
+import type { ToolCall } from '../types/tool.js';
 
 export type ConversationStatus = 'idle' | 'generating' | 'error';
 
@@ -18,6 +19,10 @@ export type ConversationEvent =
   | {
       type: 'assistant_text_delta';
       content: string;
+    }
+  | {
+      type: 'tool_call';
+      toolCall: ToolCall;
     }
   | {
       type: 'assistant_message_completed';

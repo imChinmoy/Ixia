@@ -11,6 +11,7 @@ import {
   LLMError,
 } from '../errors.js';
 import { createGroqClient } from './groq.client.js';
+import { toGroqTools, toSoraToolCall } from './groq.adapter.js';
 
 export interface GroqProviderOptions {
   apiKey?: string;
@@ -45,6 +46,8 @@ export class GroqProvider implements LLMProvider {
       content: m.content,
     }));
 
+    const groqTools = toGroqTools(options?.tools);
+
     let stream: AsyncIterable<Groq.Chat.ChatCompletionChunk>;
 
     try {
@@ -55,6 +58,7 @@ export class GroqProvider implements LLMProvider {
           stream: true,
           temperature: options?.temperature,
           max_completion_tokens: options?.maxTokens,
+          tools: groqTools,
         },
         {
           signal: options?.signal,
@@ -68,14 +72,55 @@ export class GroqProvider implements LLMProvider {
     }
 
     try {
+      const toolCallsByIndex = new Map<
+        number,
+        { id: string; name: string; argumentsBuffer: string }
+      >();
+
       for await (const chunk of stream) {
-        const delta = chunk.choices[0]?.delta?.content;
-        if (delta) {
+        const choice = chunk.choices[0];
+        if (!choice) continue;
+
+        const delta = choice.delta;
+        if (delta?.content) {
           yield {
             type: 'text_delta',
-            content: delta,
+            content: delta.content,
           };
         }
+
+        if (delta?.tool_calls) {
+          for (const tc of delta.tool_calls) {
+            const idx = tc.index ?? 0;
+            let existing = toolCallsByIndex.get(idx);
+            if (!existing) {
+              existing = {
+                id: tc.id ?? '',
+                name: tc.function?.name ?? '',
+                argumentsBuffer: '',
+              };
+              toolCallsByIndex.set(idx, existing);
+            }
+            if (tc.id) {
+              existing.id = tc.id;
+            }
+            if (tc.function?.name) {
+              existing.name = tc.function.name;
+            }
+            if (tc.function?.arguments) {
+              existing.argumentsBuffer += tc.function.arguments;
+            }
+          }
+        }
+      }
+
+      for (const accumulated of toolCallsByIndex.values()) {
+        const toolCall = toSoraToolCall(accumulated);
+        logger.debug(`Tool call received: ${toolCall.name} (${toolCall.id})`);
+        yield {
+          type: 'tool_call',
+          toolCall,
+        };
       }
 
       logger.debug('Request completed');

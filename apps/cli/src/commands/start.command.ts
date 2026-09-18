@@ -29,7 +29,10 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
 
     try {
       for await (const event of conversationManager.sendMessage(prompt)) {
-        if (event.type === 'assistant_text_delta' || (event as { type: string }).type === 'text_delta') {
+        if (
+          event.type === 'assistant_text_delta' ||
+          (event as { type: string }).type === 'text_delta'
+        ) {
           process.stdout.write((event as { content: string }).content);
         } else if (event.type === 'error') {
           process.stderr.write(`\n${chalk.red('Error:')} ${event.error.message}\n`);

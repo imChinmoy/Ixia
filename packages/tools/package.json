@@ -1,5 +1,5 @@
 {
-  "name": "@sora/llm",
+  "name": "@sora/tools",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,11 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sora/config": "workspace:*",
-    "@sora/core": "workspace:*",
-    "@sora/logger": "workspace:*",
-    "@sora/tools": "workspace:*",
-    "groq-sdk": "^1.6.0"
+    "@sora/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

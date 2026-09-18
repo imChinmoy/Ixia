@@ -1,15 +1,21 @@
 import type { Message } from '../messages/message.js';
+import type { ToolCall, ToolDefinition } from './tool.js';
 
 export interface LLMRequestOptions {
   signal?: AbortSignal;
   temperature?: number;
   maxTokens?: number;
+  tools?: readonly ToolDefinition[];
 }
 
 export type LLMEvent =
   | {
       type: 'text_delta';
       content: string;
+    }
+  | {
+      type: 'tool_call';
+      toolCall: ToolCall;
     }
   | {
       type: 'completed';

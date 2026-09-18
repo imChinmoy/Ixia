@@ -96,14 +96,14 @@ The conversation lifecycle follows a strict state transition model:
 
 `ConversationManager.send(prompt)` returns an `AsyncIterable<ConversationEvent>` that emits granular lifecycle events for consumption by the UI:
 
-| Event Type | Payload | Description |
-| :--- | :--- | :--- |
-| `user_message` | `{ message: Message }` | Emitted when user prompt is accepted and recorded in history. |
-| `generation_started` | — | Emitted when provider request begins; triggers thinking/spinner indicators. |
-| `assistant_text_delta` | `{ content: string }` | Emitted as chunks stream from the LLM provider; updates streaming UI token-by-token. |
+| Event Type                    | Payload                | Description                                                                                       |
+| :---------------------------- | :--------------------- | :------------------------------------------------------------------------------------------------ |
+| `user_message`                | `{ message: Message }` | Emitted when user prompt is accepted and recorded in history.                                     |
+| `generation_started`          | —                      | Emitted when provider request begins; triggers thinking/spinner indicators.                       |
+| `assistant_text_delta`        | `{ content: string }`  | Emitted as chunks stream from the LLM provider; updates streaming UI token-by-token.              |
 | `assistant_message_completed` | `{ message: Message }` | Emitted when the full response has been accumulated and committed to history as a single message. |
-| `generation_completed` | — | Emitted when the generation turn concludes cleanly and status returns to `idle`. |
-| `error` | `{ error: Error }` | Emitted if provider streaming or networking fails; status transitions to `error`. |
+| `generation_completed`        | —                      | Emitted when the generation turn concludes cleanly and status returns to `idle`.                  |
+| `error`                       | `{ error: Error }`     | Emitted if provider streaming or networking fails; status transitions to `error`.                 |
 
 ---
 

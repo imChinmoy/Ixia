@@ -35,7 +35,9 @@ export class ConversationError extends SoraError {
 }
 
 export class ConversationBusyError extends ConversationError {
-  constructor(message = 'A request is already in progress. Please wait until generation finishes.') {
+  constructor(
+    message = 'A request is already in progress. Please wait until generation finishes.',
+  ) {
     super(message, 'CONVERSATION_BUSY');
     this.name = 'ConversationBusyError';
   }
