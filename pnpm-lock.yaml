@@ -68,6 +68,9 @@ importers:
       '@ixia/tools':
         specifier: workspace:*
         version: link:../../packages/tools
+      '@ixia/verification':
+        specifier: workspace:*
+        version: link:../../packages/verification
       chalk:
         specifier: ^5.4.1
         version: 5.6.2
@@ -114,6 +117,9 @@ importers:
       '@ixia/tools':
         specifier: workspace:*
         version: link:../tools
+      '@ixia/verification':
+        specifier: workspace:*
+        version: link:../verification
     devDependencies:
       '@types/node':
         specifier: ^22.13.9
@@ -298,6 +304,34 @@ importers:
         specifier: workspace:*
         version: link:../core
     devDependencies:
+      typescript:
+        specifier: ^5.8.2
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.7
+        version: 3.2.7(@types/node@22.20.3)(supports-color@7.2.0)(tsx@4.23.13)
+
+  packages/verification:
+    dependencies:
+      '@ixia/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ixia/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@ixia/planner':
+        specifier: workspace:*
+        version: link:../planner
+      '@ixia/shell':
+        specifier: workspace:*
+        version: link:../shell
+      '@ixia/tools':
+        specifier: workspace:*
+        version: link:../tools
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.9
+        version: 22.20.3
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

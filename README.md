@@ -4,7 +4,7 @@ AI coding agent for your terminal.
 
 ## Current Status
 
-Phase 9 — Planning System
+Phase 10 — Verification & Self-Correction
 
 ### Completed
 
@@ -19,6 +19,7 @@ Phase 9 — Planning System
 - [x] Phase 7 — Agent Loop
 - [x] Phase 8 — Repository Context Engine
 - [x] Phase 9 — Planning System
+- [x] Phase 10 — Verification & Self-Correction
 
 ---
 
@@ -100,6 +101,17 @@ Phase 9 — Planning System
 - Step-by-step loop coordination within `AgentRuntime`
 - Interactive terminal UI plan widget (`PlanView`) and `/plan` slash command
 
+### Verification & Self-Correction
+
+- Concrete, evidence-based verification architecture (tool success ≠ task success)
+- Automatic verification discovery from repository configuration (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`, etc.)
+- Targeted verification selection proportional to step, task, and final goals
+- Structured failure categorization and diagnostic analysis (type errors, test failures, lint errors, build errors, environment errors)
+- Compact, bounded self-correction loop executed through the existing `AgentRuntime`
+- Strict retry and resource policies (`maxVerificationAttempts`, `maxChecks`, `maxOutputCharacters`, `maxVerificationDurationMs`)
+- Comprehensive cancellation via `AbortSignal` with clean child process termination
+- Real-time verification events streamed to terminal CLI and interactive UI
+
 ---
 
 ## Not Implemented Yet
@@ -110,7 +122,6 @@ Phase 9 — Planning System
 - Repository indexing
 - Semantic code search / embeddings
 - RAG
-- Verification/self-correction
 - Git integration
 - Permission system
 - Security sandbox
@@ -134,18 +145,24 @@ Phase 9 — Planning System
                      │  AgentLoop  │  Step Orchestration, Limits, Streaming)
                      └──────┬──────┘
                             │
-       ┌────────────┬───────┴───────┬────────────┐
-       ▼            ▼               ▼            ▼
-┌──────────────┐┌───────────────┐┌──────────────┐┌──────────────┐
-│ Conversation ││Context Engine ││PlanningSystem││ Tool System  │  packages/tools
-│(packages/core││(@ixia/context)││(@ixia/planner││(Registry/Exec│
-└──────┬───────┘└───────────────┘└──────────────┘└──────┬───────┘
-       │  Prompt & Context Generation                   │  Executes Tools
-       ▼                                          ┌─────┴─────┐
-┌──────────────┐                                  ▼           ▼
-│ LLM Provider │                            ┌──────────┐ ┌──────────┐
-│(packages/llm)│                            │Filesystem│ │Shell Tool│
-└──────────────┘                            └──────────┘ └──────────┘
+       ┌────────────┬───────┴───────┬────────────┬──────────────┐
+       ▼            ▼               ▼            ▼              ▼
+┌──────────────┐┌───────────────┐┌──────────────┐┌──────────────┐┌──────────────┐
+│ Conversation ││Context Engine ││PlanningSystem││ Verification ││ Tool System  │
+│(packages/core││(@ixia/context)││(@ixia/planner││(@ixia/verif.)││(Registry/Exec│
+└──────┬───────┘└───────────────┘└──────────────┘└──────┬───────┘└──────┬───────┘
+       │  Prompt & Context Generation                   │               │
+       ▼                                                │               │
+┌──────────────┐                                        │               │
+│ LLM Provider │                                        │               │
+│(packages/llm)│                                        ▼               │
+└──────────────┘                                  ToolExecutor ◄────────┘
+                                                        │
+                                                  ┌─────┴─────┐
+                                                  ▼           ▼
+                                            ┌──────────┐ ┌──────────┐
+                                            │Filesystem│ │Shell Tool│
+                                            └──────────┘ └──────────┘
 ```
 
 ---

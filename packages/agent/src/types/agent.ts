@@ -1,6 +1,13 @@
 import type { ToolCall } from '@ixia/core';
 import type { RepositoryContextSnapshot } from '@ixia/context';
 import type { Plan, PlanStep } from '@ixia/planner';
+import type {
+  VerificationCheck,
+  VerificationCheckStatus,
+  VerificationResult,
+  VerificationFailure,
+  RecoveryPolicy,
+} from '@ixia/verification';
 
 export type AgentState =
   | 'idle'
@@ -16,6 +23,7 @@ export interface AgentConfig {
   temperature?: number;
   maxTokens?: number;
   cwd?: string;
+  recoveryPolicy?: Partial<RecoveryPolicy>;
 }
 
 export interface AgentRunOptions {
@@ -25,6 +33,8 @@ export interface AgentRunOptions {
   skipContext?: boolean;
   skipPlanning?: boolean;
   forcePlan?: boolean;
+  skipVerification?: boolean;
+  forceVerify?: boolean;
 }
 
 export type AgentEvent =
@@ -146,6 +156,60 @@ export type AgentEvent =
   | {
       type: 'agent_cancelled';
       reason?: string;
+    }
+  | {
+      type: 'verification_started';
+      target: 'step' | 'final';
+      stepId?: string;
+      checks: readonly VerificationCheck[];
+    }
+  | {
+      type: 'verification_check_started';
+      check: VerificationCheck;
+    }
+  | {
+      type: 'verification_check_completed';
+      check: VerificationCheck;
+      status: VerificationCheckStatus;
+      durationMs?: number;
+    }
+  | {
+      type: 'verification_passed';
+      target: 'step' | 'final';
+      stepId?: string;
+      result: VerificationResult;
+    }
+  | {
+      type: 'verification_failed';
+      target: 'step' | 'final';
+      stepId?: string;
+      result: VerificationResult;
+      recoverable: boolean;
+    }
+  | {
+      type: 'recovery_started';
+      stepId?: string;
+      attempt: number;
+      maxAttempts: number;
+      failure: VerificationFailure;
+    }
+  | {
+      type: 'recovery_attempted';
+      stepId?: string;
+      attempt: number;
+      maxAttempts: number;
+    }
+  | {
+      type: 'recovery_completed';
+      stepId?: string;
+      attempt: number;
+      result: VerificationResult;
+    }
+  | {
+      type: 'recovery_exhausted';
+      stepId?: string;
+      totalAttempts: number;
+      failures: readonly VerificationFailure[];
     };
 
 export interface AgentRunResult {

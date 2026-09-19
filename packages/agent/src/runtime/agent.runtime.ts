@@ -4,6 +4,16 @@ import type { ConversationManager } from '@ixia/core';
 import type { ToolRegistry, ToolExecutor } from '@ixia/tools';
 import type { RepositoryContextBuilder, RepositoryContextSnapshot } from '@ixia/context';
 import type { PlannerService, PlanState, Plan } from '@ixia/planner';
+import {
+  type VerifierService,
+  type VerificationCheck,
+  type VerificationEvidence,
+  type VerificationFailure,
+  type VerificationResult,
+  type VerificationStatus,
+  type RecoveryPolicy,
+  DEFAULT_RECOVERY_POLICY,
+} from '@ixia/verification';
 import { logger } from '@ixia/logger';
 import type {
   AgentConfig,
@@ -21,6 +31,7 @@ export interface AgentRuntimeOptions {
   toolExecutor: ToolExecutor;
   contextBuilder?: RepositoryContextBuilder;
   planner?: PlannerService;
+  verifier?: VerifierService;
   config?: AgentConfig;
 }
 
@@ -33,6 +44,8 @@ export class AgentRuntime {
   private readonly toolExecutor: ToolExecutor;
   private readonly contextBuilder?: RepositoryContextBuilder;
   private readonly planner?: PlannerService;
+  private readonly verifier?: VerifierService;
+  private readonly recoveryPolicy: RecoveryPolicy;
   private readonly config: Required<AgentConfig>;
 
   private state: AgentState = 'idle';
@@ -45,6 +58,13 @@ export class AgentRuntime {
     this.toolExecutor = options.toolExecutor;
     this.contextBuilder = options.contextBuilder;
     this.planner = options.planner;
+    this.verifier = options.verifier;
+
+    this.recoveryPolicy = {
+      ...DEFAULT_RECOVERY_POLICY,
+      ...(options.verifier?.getRecoveryPolicy() ?? {}),
+      ...(options.config?.recoveryPolicy ?? {}),
+    };
 
     this.config = {
       maxIterations: options.config?.maxIterations ?? DEFAULT_MAX_ITERATIONS,
@@ -52,6 +72,7 @@ export class AgentRuntime {
       temperature: options.config?.temperature ?? 0.2,
       maxTokens: options.config?.maxTokens ?? 4096,
       cwd: options.config?.cwd ?? process.cwd(),
+      recoveryPolicy: this.recoveryPolicy,
     };
   }
 
@@ -77,6 +98,14 @@ export class AgentRuntime {
 
   getPlanner(): PlannerService | undefined {
     return this.planner;
+  }
+
+  getVerifier(): VerifierService | undefined {
+    return this.verifier;
+  }
+
+  getRecoveryPolicy(): RecoveryPolicy {
+    return { ...this.recoveryPolicy };
   }
 
   getActivePlan(): Readonly<Plan> | undefined {
@@ -291,12 +320,216 @@ export class AgentRuntime {
           }
 
           if (stepSuccess) {
-            planState.completeStep(currentStep.id);
-            yield {
-              type: 'step_completed',
-              planId: planState.getSnapshot().id,
-              step: planState.getStep(currentStep.id)!,
-            };
+            if (this.verifier && !options?.skipVerification) {
+              const stepChecks = await this.verifier.selectChecks({
+                task: currentStep.title,
+                step: currentStep,
+                plan: planState.getSnapshot(),
+                cwd: options?.cwd ?? this.config.cwd,
+              });
+
+              if (stepChecks.length > 0) {
+                yield {
+                  type: 'verification_started',
+                  target: 'step',
+                  stepId: currentStep.id,
+                  checks: stepChecks,
+                };
+
+                const verifierGen = this.executeVerificationChecks(
+                  stepChecks,
+                  abortController.signal,
+                  options?.cwd ?? this.config.cwd,
+                );
+                let stepVResult = await verifierGen.next();
+                while (!stepVResult.done) {
+                  yield stepVResult.value;
+                  stepVResult = await verifierGen.next();
+                }
+                let verificationResult = stepVResult.value;
+
+                if (verificationResult.status === 'passed') {
+                  yield {
+                    type: 'verification_passed',
+                    target: 'step',
+                    stepId: currentStep.id,
+                    result: verificationResult,
+                  };
+                  planState.completeStep(currentStep.id);
+                  yield {
+                    type: 'step_completed',
+                    planId: planState.getSnapshot().id,
+                    step: planState.getStep(currentStep.id)!,
+                  };
+                } else if (verificationResult.status === 'blocked') {
+                  yield {
+                    type: 'verification_failed',
+                    target: 'step',
+                    stepId: currentStep.id,
+                    result: verificationResult,
+                    recoverable: false,
+                  };
+                  planState.blockStep(currentStep.id, verificationResult.summary);
+                  yield {
+                    type: 'step_blocked',
+                    planId: planState.getSnapshot().id,
+                    step: planState.getStep(currentStep.id)!,
+                    reason: verificationResult.summary,
+                  };
+                  break;
+                } else {
+                  // Verification failed! Enter bounded self-correction loop
+                  yield {
+                    type: 'verification_failed',
+                    target: 'step',
+                    stepId: currentStep.id,
+                    result: verificationResult,
+                    recoverable: true,
+                  };
+
+                  const maxRecovery = this.recoveryPolicy.maxVerificationAttempts;
+                  let recoveryAttempt = 0;
+                  let recovered = false;
+
+                  while (recoveryAttempt < maxRecovery && !abortController.signal.aborted) {
+                    recoveryAttempt++;
+                    const primaryFailure = verificationResult.failures[0] ?? {
+                      id: `fail-${randomUUID()}`,
+                      category: 'unknown' as const,
+                      message: verificationResult.summary,
+                      recoverable: true,
+                    };
+
+                    yield {
+                      type: 'recovery_started',
+                      stepId: currentStep.id,
+                      attempt: recoveryAttempt,
+                      maxAttempts: maxRecovery,
+                      failure: primaryFailure,
+                    };
+
+                    // Format failure context and feed into conversation history
+                    const failedCheck = verificationResult.checks.find((c) => c.status === 'failed');
+                    const failureContext = this.verifier.formatFailureContext(
+                      verificationResult.failures,
+                      currentStep.title,
+                      failedCheck,
+                    );
+
+                    this.conversationManager.addUserMessage(failureContext);
+
+                    // Run corrective loop turn using existing Agent Runtime loop
+                    const correctionLoop = new AgentLoop({
+                      conversationManager: this.conversationManager,
+                      toolRegistry: this.toolRegistry,
+                      toolExecutor: this.toolExecutor,
+                      config: this.config,
+                      initialContext: stepContext,
+                    });
+
+                    for await (const event of correctionLoop.run({
+                      ...options,
+                      signal: abortController.signal,
+                      cwd: options?.cwd ?? this.config.cwd,
+                    })) {
+                      if (event.type === 'tool_call_started') {
+                        this.state = 'waiting_for_tool';
+                      } else if (
+                        event.type === 'tool_call_completed' ||
+                        event.type === 'tool_call_failed'
+                      ) {
+                        this.state = 'running';
+                      } else if (event.type === 'agent_cancelled') {
+                        planState.cancel(event.reason);
+                        yield {
+                          type: 'plan_cancelled',
+                          plan: planState.getSnapshot(),
+                          reason: event.reason,
+                        };
+                        yield event;
+                        return;
+                      }
+                      yield event;
+                    }
+
+                    yield {
+                      type: 'recovery_attempted',
+                      stepId: currentStep.id,
+                      attempt: recoveryAttempt,
+                      maxAttempts: maxRecovery,
+                    };
+
+                    // Re-verify after correction attempt
+                    const reVerifierGen = this.executeVerificationChecks(
+                      stepChecks,
+                      abortController.signal,
+                      options?.cwd ?? this.config.cwd,
+                    );
+                    let reResult = await reVerifierGen.next();
+                    while (!reResult.done) {
+                      yield reResult.value;
+                      reResult = await reVerifierGen.next();
+                    }
+                    verificationResult = reResult.value;
+
+                    if (verificationResult.status === 'passed') {
+                      recovered = true;
+                      yield {
+                        type: 'recovery_completed',
+                        stepId: currentStep.id,
+                        attempt: recoveryAttempt,
+                        result: verificationResult,
+                      };
+                      yield {
+                        type: 'verification_passed',
+                        target: 'step',
+                        stepId: currentStep.id,
+                        result: verificationResult,
+                      };
+                      planState.completeStep(currentStep.id);
+                      yield {
+                        type: 'step_completed',
+                        planId: planState.getSnapshot().id,
+                        step: planState.getStep(currentStep.id)!,
+                      };
+                      break;
+                    }
+                  }
+
+                  if (!recovered && !abortController.signal.aborted) {
+                    yield {
+                      type: 'recovery_exhausted',
+                      stepId: currentStep.id,
+                      totalAttempts: recoveryAttempt,
+                      failures: verificationResult.failures,
+                    };
+                    planState.failStep(currentStep.id, verificationResult.summary);
+                    yield {
+                      type: 'step_failed',
+                      planId: planState.getSnapshot().id,
+                      step: planState.getStep(currentStep.id)!,
+                      error: new Error(verificationResult.summary),
+                    };
+                    break;
+                  }
+                }
+              } else {
+                // No checks required for this step
+                planState.completeStep(currentStep.id);
+                yield {
+                  type: 'step_completed',
+                  planId: planState.getSnapshot().id,
+                  step: planState.getStep(currentStep.id)!,
+                };
+              }
+            } else {
+              planState.completeStep(currentStep.id);
+              yield {
+                type: 'step_completed',
+                planId: planState.getSnapshot().id,
+                step: planState.getStep(currentStep.id)!,
+              };
+            }
           } else if (stepError) {
             planState.failStep(currentStep.id, stepError.message);
             yield {
@@ -328,8 +561,63 @@ export class AgentRuntime {
         );
 
         if (allCompleted) {
-          planState.complete();
-          yield { type: 'plan_completed', plan: planState.getSnapshot() };
+          if (this.verifier && !options?.skipVerification) {
+            const finalChecks = await this.verifier.selectChecks({
+              task: finalPlan.goal,
+              plan: finalPlan,
+              cwd: options?.cwd ?? this.config.cwd,
+              isFinal: true,
+            });
+
+            if (finalChecks.length > 0) {
+              yield {
+                type: 'verification_started',
+                target: 'final',
+                checks: finalChecks,
+              };
+
+              const finalGen = this.executeVerificationChecks(
+                finalChecks,
+                abortController.signal,
+                options?.cwd ?? this.config.cwd,
+              );
+              let fResult = await finalGen.next();
+              while (!fResult.done) {
+                yield fResult.value;
+                fResult = await finalGen.next();
+              }
+              const finalVerificationResult = fResult.value;
+
+              if (finalVerificationResult.status === 'passed') {
+                yield {
+                  type: 'verification_passed',
+                  target: 'final',
+                  result: finalVerificationResult,
+                };
+                planState.complete();
+                yield { type: 'plan_completed', plan: planState.getSnapshot() };
+              } else {
+                yield {
+                  type: 'verification_failed',
+                  target: 'final',
+                  result: finalVerificationResult,
+                  recoverable: false,
+                };
+                planState.fail(finalVerificationResult.summary);
+                yield {
+                  type: 'plan_failed',
+                  plan: planState.getSnapshot(),
+                  error: new Error(`Final verification failed: ${finalVerificationResult.summary}`),
+                };
+              }
+            } else {
+              planState.complete();
+              yield { type: 'plan_completed', plan: planState.getSnapshot() };
+            }
+          } else {
+            planState.complete();
+            yield { type: 'plan_completed', plan: planState.getSnapshot() };
+          }
         } else {
           yield {
             type: 'plan_failed',
@@ -407,6 +695,14 @@ export class AgentRuntime {
         output = event.output;
         iterations = event.totalIterations;
         toolCallsCount = event.totalToolCalls;
+      } else if (event.type === 'plan_completed') {
+        success = true;
+      } else if (event.type === 'plan_failed' || event.type === 'step_failed') {
+        success = false;
+        error = event.error;
+      } else if (event.type === 'verification_failed' && event.target === 'final') {
+        success = false;
+        error = new Error(event.result.summary);
       } else if (event.type === 'agent_error') {
         success = false;
         error = event.error;
@@ -424,5 +720,95 @@ export class AgentRuntime {
       error,
       cancelled,
     };
+  }
+
+  /**
+   * Executes an array of verification checks, streaming check started/completed events,
+   * and compiles the final VerificationResult.
+   */
+  private async *executeVerificationChecks(
+    checks: readonly VerificationCheck[],
+    signal?: AbortSignal,
+    cwd?: string,
+  ): AsyncGenerator<AgentEvent, VerificationResult> {
+    const runner = this.verifier!.getRunner();
+    const executedChecks: VerificationCheck[] = [];
+    const allEvidence: VerificationEvidence[] = [];
+    const allFailures: VerificationFailure[] = [];
+    const startedAt = new Date();
+
+    for (const check of checks) {
+      if (signal?.aborted) {
+        executedChecks.push({
+          ...check,
+          status: 'skipped',
+          error: signal.reason || 'Verification was cancelled',
+        });
+        continue;
+      }
+
+      yield { type: 'verification_check_started', check };
+
+      const outcome = await runner.runCheck(check, {
+        cwd,
+        signal,
+        timeoutMs: this.recoveryPolicy.maxVerificationDurationMs,
+        maxOutputLength: this.recoveryPolicy.maxOutputCharacters,
+      });
+
+      executedChecks.push(outcome.check);
+      allEvidence.push(...outcome.evidence);
+      allFailures.push(...outcome.failures);
+
+      yield {
+        type: 'verification_check_completed',
+        check: outcome.check,
+        status: outcome.check.status,
+        durationMs: outcome.check.durationMs,
+      };
+
+      if (
+        outcome.failures.some(
+          (f) => f.category === 'environment_failure' && !f.recoverable,
+        )
+      ) {
+        break;
+      }
+    }
+
+    const hasFailures = allFailures.length > 0;
+    const hasBlocked = allFailures.some(
+      (f) => f.category === 'environment_failure' && !f.recoverable,
+    );
+
+    let status: VerificationStatus = 'passed';
+    if (signal?.aborted || hasBlocked) {
+      status = 'blocked';
+    } else if (hasFailures) {
+      status = 'failed';
+    }
+
+    let summary = '';
+    if (status === 'passed') {
+      summary = `Verification passed: all ${executedChecks.length} checks succeeded with concrete evidence.`;
+    } else if (status === 'blocked') {
+      summary = `Verification blocked: ${allFailures[0]?.message || 'Operation cancelled'}`;
+    } else {
+      const failCount = executedChecks.filter((c) => c.status === 'failed').length;
+      summary = `Verification failed: ${failCount}/${executedChecks.length} checks failed. (${allFailures[0]?.message || 'Checks failed'})`;
+    }
+
+    const result: VerificationResult = {
+      id: `verify-${randomUUID()}`,
+      status,
+      checks: executedChecks,
+      evidence: allEvidence,
+      failures: allFailures,
+      summary,
+      startedAt,
+      completedAt: new Date(),
+    };
+
+    return result;
   }
 }

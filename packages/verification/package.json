@@ -1,5 +1,5 @@
 {
-  "name": "@ixia/agent",
+  "name": "@ixia/verification",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -12,10 +12,9 @@
   "dependencies": {
     "@ixia/core": "workspace:*",
     "@ixia/logger": "workspace:*",
-    "@ixia/tools": "workspace:*",
-    "@ixia/context": "workspace:*",
     "@ixia/planner": "workspace:*",
-    "@ixia/verification": "workspace:*"
+    "@ixia/shell": "workspace:*",
+    "@ixia/tools": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.13.9",

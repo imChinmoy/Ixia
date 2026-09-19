@@ -20,6 +20,7 @@ export default defineConfig({
       '@ixia/agent': path.resolve(__dirname, './packages/agent/src/index.ts'),
       '@ixia/context': path.resolve(__dirname, './packages/context/src/index.ts'),
       '@ixia/planner': path.resolve(__dirname, './packages/planner/src/index.ts'),
+      '@ixia/verification': path.resolve(__dirname, './packages/verification/src/index.ts'),
     },
   },
 });

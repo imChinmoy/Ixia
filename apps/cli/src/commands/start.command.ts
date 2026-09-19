@@ -9,6 +9,7 @@ import { registerShellTools } from '@ixia/shell';
 import { AgentRuntime } from '@ixia/agent';
 import { RepositoryContextBuilder } from '@ixia/context';
 import { PlannerService } from '@ixia/planner';
+import { VerifierService } from '@ixia/verification';
 import { renderInteractiveUI } from '../ui/index.js';
 import { logger } from '@ixia/logger';
 
@@ -42,6 +43,7 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
   });
 
   const planner = new PlannerService();
+  const verifier = new VerifierService({ toolExecutor });
 
   const agentRuntime = new AgentRuntime({
     conversationManager,
@@ -49,6 +51,7 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
     toolExecutor,
     contextBuilder,
     planner,
+    verifier,
     config: {
       cwd: process.cwd(),
       maxIterations: 10,
@@ -92,6 +95,44 @@ export async function startCommand(options: StartCommandOptions = {}): Promise<v
           process.stdout.write(`${chalk.green('✓')} ${chalk.dim(event.step.title)}\n\n`);
         } else if (event.type === 'step_failed') {
           process.stdout.write(`${chalk.red('✗')} ${event.step.title}: ${event.error.message}\n\n`);
+        } else if (event.type === 'verification_started') {
+          const label = event.target === 'step' ? 'Checking' : 'Final task verification';
+          process.stdout.write(`  ${chalk.dim(`${label}...`)}\n`);
+        } else if (event.type === 'verification_check_completed') {
+          const icon = event.status === 'passed' ? chalk.green('✓') : chalk.red('✗');
+          const dur = event.durationMs ? chalk.dim(` (${event.durationMs}ms)`) : '';
+          process.stdout.write(`  ${icon} ${chalk.dim(event.check.name)}${dur}\n`);
+          if (event.status === 'failed' && event.check.output) {
+            const preview = event.check.output
+              .trim()
+              .split('\n')
+              .slice(0, 3)
+              .map((l) => `    ${l}`)
+              .join('\n');
+            process.stdout.write(`${chalk.red(preview)}\n`);
+          }
+        } else if (event.type === 'verification_passed') {
+          const label = event.target === 'step' ? 'Verified' : 'Final verification passed';
+          process.stdout.write(`  ${chalk.green('✓')} ${chalk.green(label)}\n\n`);
+        } else if (event.type === 'verification_failed') {
+          process.stdout.write(`\n${chalk.red('✗ Verification failed')}\n`);
+          for (const f of event.result.failures.slice(0, 3)) {
+            const loc = f.file ? ` (${f.file}${f.line ? `:${f.line}` : ''})` : '';
+            process.stdout.write(`  ${chalk.red('✗')} ${chalk.red(`[${f.category}]`)} ${f.message}${chalk.dim(loc)}\n`);
+          }
+          process.stdout.write('\n');
+        } else if (event.type === 'recovery_started') {
+          process.stdout.write(
+            `${chalk.yellow('↻')} ${chalk.yellow(`Attempting correction (attempt ${event.attempt}/${event.maxAttempts})...`)}\n`,
+          );
+        } else if (event.type === 'recovery_attempted') {
+          process.stdout.write(`  ${chalk.dim(`Checking again...`)}\n`);
+        } else if (event.type === 'recovery_completed') {
+          process.stdout.write(`${chalk.green('✓')} ${chalk.green('Correction applied')}\n\n`);
+        } else if (event.type === 'recovery_exhausted') {
+          process.stdout.write(
+            `${chalk.red.bold(`✗ Verification failed after ${event.totalAttempts} attempts`)}\n\n`,
+          );
         } else if (event.type === 'plan_completed') {
           process.stdout.write(`${chalk.green.bold('✓ Plan completed.')}\n\n`);
         } else if (event.type === 'tool_call_started') {

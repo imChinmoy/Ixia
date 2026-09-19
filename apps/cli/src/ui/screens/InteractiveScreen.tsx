@@ -330,6 +330,62 @@ export const InteractiveScreen: React.FC<InteractiveScreenProps> = ({
               ),
             );
             setIsThinking(true);
+          } else if (event.type === 'verification_check_started') {
+            setIsThinking(true);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `check-${event.check.id}`,
+                type: 'tool',
+                content: `verify: ${event.check.name}`,
+                timestamp: Date.now(),
+                toolName: event.check.name,
+                toolStatus: 'running',
+              },
+            ]);
+          } else if (event.type === 'verification_check_completed') {
+            setIsThinking(true);
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === `check-${event.check.id}`
+                  ? {
+                      ...msg,
+                      toolStatus: event.status === 'passed' ? 'success' : 'failed',
+                    }
+                  : msg,
+              ),
+            );
+          } else if (event.type === 'recovery_started') {
+            setIsThinking(true);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `recovery-${Date.now()}`,
+                type: 'info',
+                content: `Attempting correction (attempt ${event.attempt}/${event.maxAttempts})...`,
+                timestamp: Date.now(),
+              },
+            ]);
+          } else if (event.type === 'recovery_completed') {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `recovery-ok-${Date.now()}`,
+                type: 'info',
+                content: 'Correction applied successfully',
+                timestamp: Date.now(),
+              },
+            ]);
+          } else if (event.type === 'recovery_exhausted') {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `recovery-exhaust-${Date.now()}`,
+                type: 'error',
+                content: `Verification failed after ${event.totalAttempts} attempts`,
+                timestamp: Date.now(),
+              },
+            ]);
           } else if (event.type === 'agent_completed') {
             setIsThinking(false);
             setActiveStreamingId(null);

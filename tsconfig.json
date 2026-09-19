@@ -15,6 +15,7 @@
     { "path": "./packages/agent" },
     { "path": "./packages/context" },
     { "path": "./packages/planner" },
+    { "path": "./packages/verification" },
     { "path": "./apps/cli" }
   ],
   "files": [],
